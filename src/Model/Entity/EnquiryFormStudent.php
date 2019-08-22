@@ -74,6 +74,7 @@ class EnquiryFormStudent extends Entity
     protected $_accessible = [
         'name' => true,
         'name_separate' => true,
+        'is_deleted' => true,
         'entrance_exam_resulte' => true,
         'gender_id' => true,
         'father_name' => true,

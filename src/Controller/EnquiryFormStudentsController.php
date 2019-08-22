@@ -166,6 +166,21 @@ class EnquiryFormStudentsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
+
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $enquiry = $this->EnquiryFormStudents->get($id);
+            $enquiry->is_deleted=1;
+        if ($this->EnquiryFormStudents->save($enquiry)) {
+            $this->Flash->success(__('The Enquiry is deleted.'));
+        } else {
+            $this->Flash->error(__('The Enquiry is not deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
     public function add()
     {
         $user_id = $this->Auth->User('id');
