@@ -88,51 +88,88 @@ class TimeTablePeriodsController extends AppController
 
         $timeTablePeriod = $this->TimeTablePeriods->newEntity();
         $option=[];
-        $user_type = $this->Auth->User('login_type');
+         $user_type = $this->Auth->User('login_type');
         if ($user_type=='Employee') {
              $data = $this->TimeTablePeriods->FacultyClassMappings->ClassMappings->find()->where(['ClassMappings.session_year_id'=>$session_year_id,'ClassMappings.employee_id'=>$user_id,'ClassMappings.is_deleted'=>'N'])->contain(['StudentClasses','Mediums','Streams','Sections'])->first();
+			 
+				if($data){ 
+					$student_class_id = $data->student_class_id;
+					$stream_id = $data->stream_id;
+					$section_id = $data->section_id;
+					$medium_id = $data->medium_id;
+					$name='';
+					if(!empty($medium_id)){
+						$name.=$data->medium->name;
+					}
+					if(!empty($student_class_id)){
+						$name.=' -> '.$data->student_class->name;
+					}
+					if(!empty($section_id)){
+						$name.=' -> '.$data->section->name;
+					}
+					
+					if(!empty($stream_id)){
+						$name.=' -> '.$data->stream->name;
+					}
+					$getSubject = $this->TimeTablePeriods->Subjects->find()->where(['Subjects.student_class_id'=>$student_class_id,'Subjects.stream_id'=>$stream_id,'Subjects.session_year_id'=>$session_year_id,'Subjects.is_deleted'=>'N']);
+					if(!empty($getSubject->toArray())){
+						foreach ($getSubject as $SubjectList) {
+						  $option[]=['value'=>$SubjectList->id,
+								'text'=>$name.' -> '.$SubjectList->name,
+								'mid'=>$medium_id,
+								'cid'=>$student_class_id,
+								'stid'=>$stream_id,
+								'scid'=>$section_id,
+								'subid'=>$SubjectList->id,
+							];  
+						}
+					}
+				} 
+		
         }
         else
         {
-            $data = $this->TimeTablePeriods->FacultyClassMappings->ClassMappings->find()->where(['ClassMappings.session_year_id'=>$session_year_id,'ClassMappings.is_deleted'=>'N'])->contain(['StudentClasses','Mediums','Streams','Sections'])->first();
+           $datas = $this->TimeTablePeriods->FacultyClassMappings->ClassMappings->find()->where(['ClassMappings.session_year_id'=>$session_year_id,'ClassMappings.is_deleted'=>'N'])->contain(['StudentClasses','Mediums','Streams','Sections'])->order(['student_class_id'=>'ASC','section_id'=>'ASC'])->toArray();
+			
+			foreach($datas as $data){ 
+				$student_class_id = $data->student_class_id;
+				$stream_id = $data->stream_id;
+				$section_id = $data->section_id;
+				$medium_id = $data->medium_id;
+				$name='';
+				if(!empty($medium_id)){
+					$name.=$data->medium->name;
+				}
+				if(!empty($student_class_id)){
+					$name.=' -> '.$data->student_class->name;
+				}
+				if(!empty($section_id)){
+					$name.=' -> '.$data->section->name;
+				}
+				
+				if(!empty($stream_id)){
+					$name.=' -> '.$data->stream->name;
+				}
+				$getSubject = $this->TimeTablePeriods->Subjects->find()->where(['Subjects.student_class_id'=>$student_class_id,'Subjects.stream_id'=>$stream_id,'Subjects.session_year_id'=>$session_year_id,'Subjects.is_deleted'=>'N']);
+				if(!empty($getSubject->toArray())){
+					foreach ($getSubject as $SubjectList) {
+					  $option[]=['value'=>$SubjectList->id,
+							'text'=>$name.' -> '.$SubjectList->name,
+							'mid'=>$medium_id,
+							'cid'=>$student_class_id,
+							'stid'=>$stream_id,
+							'scid'=>$section_id,
+							'subid'=>$SubjectList->id,
+						];  
+					}
+				}
+			} 
         }
         
-        
+      
     
     //echo $user_type; exit;
-        if($data){ 
-            $student_class_id = $data->student_class_id;
-            $stream_id = $data->stream_id;
-            $section_id = $data->section_id;
-            $medium_id = $data->medium_id;
-            $name='';
-            if(!empty($medium_id)){
-                $name.=$data->medium->name;
-            }
-            if(!empty($student_class_id)){
-                $name.=' -> '.$data->student_class->name;
-            }
-            if(!empty($section_id)){
-                $name.=' -> '.$data->section->name;
-            }
-            
-            if(!empty($stream_id)){
-                $name.=' -> '.$data->stream->name;
-            }
-            $getSubject = $this->TimeTablePeriods->Subjects->find()->where(['Subjects.student_class_id'=>$student_class_id,'Subjects.stream_id'=>$stream_id,'Subjects.session_year_id'=>$session_year_id,'Subjects.is_deleted'=>'N']);
-            if(!empty($getSubject->toArray())){
-                foreach ($getSubject as $SubjectList) {
-                  $option[]=['value'=>$SubjectList->id,
-                        'text'=>$name.' -> '.$SubjectList->name,
-                        'mid'=>$medium_id,
-                        'cid'=>$student_class_id,
-                        'stid'=>$stream_id,
-                        'scid'=>$section_id,
-                        'subid'=>$SubjectList->id,
-                    ];  
-                }
-            }
-        } 
+       
         
 
         if ($this->request->is('post')) {

@@ -219,7 +219,7 @@ class StudentInfosTable extends Table
         $this->belongsTo('StreamsApi', [
             'className' => 'Streams',
             'foreignKey' => 'stream_id'
-        ]); 
+        ]);
 		
 		$this->belongsTo('Users')
 			->setForeignKey([
@@ -228,7 +228,6 @@ class StudentInfosTable extends Table
 			->setBindingKey([
 				'student_id'
 			]);
-		
     }
 
     /**

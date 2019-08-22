@@ -53,7 +53,11 @@
                             <?php echo $this->Form->control('stream_id',[
                             'label' => false,'class'=>'form-control','empty'=>'---Select Stream---','id'=>'stream_id']);?>
                         </div>
-                        
+                        <div class="col-md-3">
+                            <label class="control-label"> Section</label>
+                            <?php echo $this->Form->control('section_id',[
+                            'label' => false,'class'=>'form-control','empty'=>'---Select Section---','options'=>$sections,'id'=>'section_id']);?>
+                        </div>
                     </div>
                     <div  class="row">
                         <center>
