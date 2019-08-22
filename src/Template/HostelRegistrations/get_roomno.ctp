@@ -1,0 +1,1 @@
+ <?= $this->Form->control('room_id', ['options' => $rooms,'label' => false, 'class'=>'select2','empty'=>'Select Room','style'=>'width:100%','required'])?>

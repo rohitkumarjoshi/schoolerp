@@ -1,0 +1,54 @@
+/*.caption{
+	padding: 13px 0px 0px 18px;
+    font-size: 17px;
+    font-weight: 600;
+}
+.control-label{
+	font-size: 14px;
+    font-weight: 600;	
+}
+.table>thead>tr>th{
+	background-color: #4D374B !important;
+    color: #ffffff;
+	vertical-align: middle;
+	height: 48px;
+	
+} 
+.table>thead>tr>th>a{
+    color: #ffffff !important;
+} 
+
+.table>tbody>tr>td>a{
+	color: #000;
+}
+
+.table>tbody>tr>td>a>i.fa-trash-o{
+	color:coral;
+}
+
+.table>tbody>tr>td{
+	vertical-align: middle;
+	font-size: 14px !important;
+	padding :4px;
+}
+.button{
+	color: #ffffff;
+	background-color: #FF6468 !important;
+	padding: 8px 30px 8px 30px;
+	font-size: 16px;
+	font-weight: 600;
+}
+.button:hover{
+	color :#ffffff !important;
+}
+.actions{
+	text-align:center;
+}
+.topheader{
+	font-size: 17px;
+    font-weight: 600;
+    padding-left: 16px;
+	padding-bottom: 5px;
+
+}
+*/

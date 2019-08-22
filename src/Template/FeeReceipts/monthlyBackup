@@ -1,0 +1,176 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Book $book
+ */
+?>
+<style type="text/css">
+    .form-control{
+        margin-bottom: 5px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header with-border" >
+                <i class="fa fa-hand-o-right fas" style="float:none !important;"></i> <label> Fee Deposition Details </label>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-hover" id="tab">
+                    <tbody>
+                    <tr>
+                        <th>Scholar No.: <?=$students->scholar_no?></th>
+                        <th>Recipt No.: <?=$ReceiptNo?></th>
+                        <th>Date: <?= date('d-m-Y')?></th>
+                        <th>Class: <?= @$studentInfos->student_class->name?></th>
+                    </tr>
+                    <tr>
+                        <?php 
+                            $busFacility="No";
+                            if($studentInfos->fee_type_role_id){
+                                $busFacility="Yes";
+                            }
+                        ?>
+                        <th>Name: <?=$students->name?></th>
+                        <th>Father Name: <?= @$students->father_name?></th>
+                        <th>Mother Name: <?= @$students->mother_name?></th>
+                        <th>Bus Facility: <?= $busFacility?></th>
+                    </tr>
+                    <tr>
+                        <th>Medium: <?= @$studentInfos->medium->name?></th> 
+                        <th>Stream: <?= @$studentInfos->stream->name?></th>
+                        <th>Section: <?= @$studentInfos->section->name?></th>
+                        <th>Edit Student</th>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-hover" style="text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Months</th>
+                            <?php
+                                $y=0;
+                                foreach ($feeMonths as $key => $value) {
+                                    echo " <th>".$value->name."</th>";
+                                    echo $this->Form->control('fee_type_master_rows['.$y.'][fee_month_id]',['label' => false,'type'=>'hidden','value'=>$value->id]);
+                                 $y++;
+                                }
+                            ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td> Fee Component</td>
+                            <?php
+                                foreach ($feeMonths as $key => $value) { 
+                                echo '<td>'.$this->Form->control('paidornot', ['type' => 'checkbox','label'=>false,'class'=>'checkDisable','uncheck'=>'removeDisable'.$value->id,'totalAmount'=>'totalAmount'.$value->id,'value'=>$value->id]).'</td>';
+                                }
+                            ?>
+                        </tr>
+                        <?php
+                          foreach ($FeeData as $FeeDatas) {
+                            echo"<tr><td>".$FeeDatas->fee_type->name.$this->Form->control('paidornot', ['type' => 'checkbox','label'=>false,'class'=>'checkDisablea','value'=>$value->id])."</td>";
+                             $x=0;
+                            foreach ($feeMonths as $key => $value) { 
+                                echo "
+                                    <td>
+                                    <label>".
+                                        $FeeDatas->fee_type_master_rows[$x]->amount
+                                    ."</label>".
+                                    $this->Form->control('fee_type_master_rows['.$x.'][amount]',[
+                                        'label' => false,
+                                        'class'=>'form-control amountValid input-small removeDisable'.$value->id,
+                                        'placeholder'=>'Amount',
+                                        'type'=>'text',
+                                        'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');",
+                                        'id'=>'fee_type_master_rows['.$x.'][amount]',
+                                        'value'=>$FeeDatas->fee_type_master_rows[$x]->amount,
+                                        'disabled'=>true,
+                                        'actualAmount'=>$FeeDatas->fee_type_master_rows[$x]->amount,
+                                        'actulId'=>$value->id,
+                                        'uncheck'=>'removeDisable'.$value->id,
+                                        'totalAmount'=>'totalAmount'.$value->id
+                                        ])."</td>";
+                                $x++;
+                            }
+                            echo"</tr>";
+                        }
+                        ?>
+                         
+                        <tr>
+                            <td> Total Amount</td>
+                            <?php
+                                foreach ($feeMonths as $key => $value) { 
+                                echo '<td>'.$this->Form->control('paidornot', ['type' => 'taxt','label'=>false,'class'=>'form-control input-small totalAmount'.$value->id]).'</td>';
+                                }
+                            ?>
+                        </tr>
+                    </tbody>
+                    </tr>
+                    <tfoot>
+                        <tr>
+                            <td colspan="15" align="center">
+                                <?php echo $this->Form->button('Submit',['class'=>'btn btn-primary','type'=>'submit']); ?>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                           
+                    
+                </table>               
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+ 
+$js="
+ $(document).ready(function(){
+    $(document).on('ifChanged', '.checkDisable', function(){
+        var isClass = $(this).attr('uncheck');
+        var totalAmount = $(this).attr('totalAmount');
+        var total = 0;
+        if($(this).is(':checked')){
+            $('.' + isClass).removeAttr('disabled');
+             
+            $('.' + isClass).each(function(){
+                var amount = parseInt($(this).val());
+                total=parseInt(total)+amount;
+            });
+        }
+        else{
+            $('.' + isClass).attr('disabled','true');
+            total='';
+        }
+        
+        $('.'+totalAmount).val(total);
+    });
+    $(document).on('keyup', '.amountValid', function(){
+        var actualAmount=parseInt($(this).attr('actualAmount'));
+        var isClass = $(this).attr('uncheck');
+        var totalAmount = $(this).attr('totalAmount');
+
+        var inputted = parseInt($(this).val());
+        var total = 0; 
+        if( (inputted > actualAmount) || (inputted < 1) || ($(this).val().length == 0)){
+            alert('Invalid Amount'); 
+            $(this).val(actualAmount);
+             $('.' + isClass).each(function(){
+                var amount = parseInt($(this).val());
+                total=parseInt(total)+amount;
+            });
+            $('.'+totalAmount).val(total);
+        }
+        else{
+            $('.' + isClass).each(function(){
+                var amount = parseInt($(this).val());
+                total=parseInt(total)+amount;
+            });
+            $('.'+totalAmount).val(total);
+        }
+    });
+});
+
+";
+$this->Html->scriptBlock($js,['block'=>'block_js']);
+?>
