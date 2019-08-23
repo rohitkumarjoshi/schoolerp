@@ -29,7 +29,7 @@ class EnquiryFormStudentsController extends AppController
     public function index()
     {
         $session_year_id = $this->Auth->User('session_year_id');
-        $enquiryFormStudents = $this->EnquiryFormStudents->find()->where(['EnquiryFormStudents.session_year_id'=>$session_year_id,'enquiry_no >'=>0])->contain(['Genders','Mediums','StudentClasses','Streams']);
+        $enquiryFormStudents = $this->EnquiryFormStudents->find()->where(['EnquiryFormStudents.session_year_id'=>$session_year_id,'enquiry_no >'=>0,'is_deleted'=>0])->contain(['Genders','Mediums','StudentClasses','Streams']);
         $studentClasses  = $this->EnquiryFormStudents->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         //$enquiryStatuses = array('Pending'=>'Pending','Approved'=>'Approved','Reject'=>'Reject','Hold'=>'Hold');
         $this->set(compact('enquiryFormStudents','studentClasses','enquiryStatuses'));
