@@ -78,7 +78,8 @@
                             <td class="actions">
                                 <?= $this->Html->link(__('<i class="fa fa-eye"></i> '), ['controller'=>'EnquiryFormStudents','action'=>'view', $EncryptingDecrypting->encryptData($enquiryFormStudent->id)],['class'=>'btn btn-info btn-xs viewbtn','escape'=>false, 'data-widget'=>'View Enquiry', 'data-toggle'=>'tooltip', 'data-original-title'=>'View Enquiry']) ?>
                                 <?php if($enquiryFormStudent->admission_form_no == 0){ ?>
-                                <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $enquiryFormStudent->id], ['confirm' => __('Are you sure you want to Deactive # {0}?'),'class'=>'btn btn-xs green']) ?>
+                               
+                                <?= $this->Form->postLink(__("<i class='fa fa-trash' ></i>"), ['action' => 'delete', $enquiryFormStudent->id], ['confirm' => __('Are you sure you want to delete # {0}?'),'class'=>'btn btn-info btn-xs viewbtn','escape'=>false,  'data-toggle'=>'tooltip']) ?>
                                 <?php } ?>
                             </td>
                         </tr>

@@ -100,6 +100,8 @@ foreach ($menus as $menu) {
             <a href="<?= $this->Url->build(['controller'=>'FacultyClassMappings','action' =>'index'])?>"> Faculty Mapping</a>
         </li>
 
+
+
         <li class="treeview">
             <a href="#">
                 <i class="fas fa-bus-alt"></i>

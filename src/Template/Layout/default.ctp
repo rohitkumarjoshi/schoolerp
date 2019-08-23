@@ -430,7 +430,7 @@
     <aside class="main-sidebar no-print">
         <section class="sidebar"> 
             <ul class="sidebar-menu">
-            <?= $this->element('menu'); ?>
+                <?= $this->element('menu'); ?>
             </ul>
         </section>
     </aside>
