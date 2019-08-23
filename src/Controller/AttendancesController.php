@@ -23,6 +23,18 @@ class AttendancesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+
+    public function summaryAttendance()
+    {
+        $attendances=$this->Attendances->find()
+        ->where(['Attendances.attendance_date'=>date('Y-m-d'),'Attendances.is_deleted'=>'N'])
+        ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])
+        ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
+        //pr($attendances->toArray());exit;
+
+        $this->set(compact('attendances'));
+    }
+
     public function index()
     {
         $this->paginate = [
@@ -31,6 +43,48 @@ class AttendancesController extends AppController
         $attendances = $this->paginate($this->Attendances);
 
         $this->set(compact('attendances'));
+    }
+
+
+    public function attendanceReport()
+    {
+        //$attendances=$this->Attendances->find()->where(['id'=>1]);
+
+        if ($this->request->is(['patch', 'post', 'put'])) 
+        {
+            $medium_id=$this->request->getData('medium_id');
+            $student_months=$this->request->getData('student_months');
+            $student_class_id=$this->request->getData('student_class_id');
+            $section_id=$this->request->getData('section_id');
+
+            if(!empty($student_months))
+            {
+                $attendances=$this->Attendances->find()->where(['Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+            }
+
+            if(!empty($medium_id))
+            {
+                $attendances=$this->Attendances->find()->where(['StudentInfos.medium_id'=>$medium_id,'Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+            }
+            if(!empty($student_class_id))
+            {
+                $attendances=$this->Attendances->find()->where(['StudentInfos.student_class_id'=>$student_class_id,'Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+            }
+            if(!empty($section_id))
+            {
+                $attendances=$this->Attendances->find()->where(['StudentInfos.section_id'=>$section_id,])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+            }
+            //ini_set('memory_limit', '-1');
+
+
+           
+        }
+
+        $mediums=$this->Attendances->StudentInfos->Mediums->find('list')->where(['Mediums.is_deleted'=>'N']);
+        $sections=$this->Attendances->StudentInfos->Sections->find('list')->where(['Sections.is_deleted'=>'N']);
+        $classes=$this->Attendances->StudentInfos->StudentClasses->find('list')->where(['StudentClasses.is_deleted'=>'N']);
+
+        $this->set(compact('attendances','mediums','sections','month','classes'));
     }
 
     /**

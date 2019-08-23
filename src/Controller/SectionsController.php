@@ -34,11 +34,14 @@ class SectionsController extends AppController
         }
         if ($this->request->is(['post','put'])) {
             
-            $section = $this->Sections->patchEntity($section, $this->request->getData());            
+            $section = $this->Sections->patchEntity($section, $this->request->getData()); 
+
             if(!$id)
             {
                 $section->created_by =$user_id;
                 $section->session_year_id =$session_year_id;
+
+           
             }
             else
             {
