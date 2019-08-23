@@ -26,11 +26,12 @@ class AttendancesController extends AppController
 
     public function summaryAttendance()
     {
-        $attendances=$this->Attendances->find()
-        ->where(['Attendances.attendance_date'=>date('Y-m-d'),'Attendances.is_deleted'=>'N'])
-        ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])
-        ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
-        //pr($attendances->toArray());exit;
+        $attendances=$this->Attendances->find()->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+        ->select(['Attendances.student_info_id','count'=>'count(Attendances.first_half)'])
+        ->where(['Attendances.attendance_date'=>date('Y-m-d'),'Attendances.is_deleted'=>'N','Attendances.first_half'=>0.5])
+        ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])->autoFields(true);
+      
+       // pr($attendances->toArray());exit;
 
         $this->set(compact('attendances'));
     }
