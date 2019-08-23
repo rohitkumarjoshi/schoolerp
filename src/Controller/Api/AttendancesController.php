@@ -97,8 +97,8 @@ class AttendancesController extends AppController
 			//pr($studentList); exit;
             $listArray=Array();
             foreach ($studentList as $value) {
-                $listArray['first_half']=$value->first_half;
-                $listArray['second_half']=$value->second_half;
+                $listArray['first_half']=(string)$value->first_half;
+                $listArray['second_half']=(string)$value->second_half;
                 $listArray['student_info_id']=$value->student_info_api->id;
                 $listArray['student_name']=$value->student_info_api->student->name;
                 $mainArray[]=$listArray;
