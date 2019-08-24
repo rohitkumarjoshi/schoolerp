@@ -77,6 +77,113 @@ class FeeCategoriesController extends AppController
         $status = array('N'=>'Active','Y'=>'Deactive');
         $this->set(compact('feeCategories','feeCategory','id','status'));
     }
+
+      public function exportReceiptDetailReport($medium_id,$student_class_id,$stream_id,$date_from,$date_to,$payment_type)
+    {
+        $this->viewBuilder()->layout('index_layout');
+         $dailyCollection=[];
+        $session_year_id = $this->Auth->User('session_year_id');
+            
+            // $daterange=explode('/',$daterange);
+            // $date_from=date('Y-m-d',strtotime($daterange[0]));
+            // $date_to=date('Y-m-d',strtotime($daterange[1]));
+            
+            $expenses=$this->FeeCategories->Expenses->find();
+                $expenses->where(['Expenses.expense_date >='=>$date_from,'Expenses.expense_date <='=>$date_to,'payment_mode'=>'Cash'])
+                ->select(['total_amount'=>$expenses->func()->sum('amount')]);
+               
+            $getFeeCategories = $this->FeeCategories->find();
+            $getFeeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>['FeeTypeRoles']]);
+            $srno=0;
+            foreach ($getFeeCategories as $feeCategory) 
+            {
+                $fee_category_id=$feeCategory->id;
+                if($feeCategory->fee_collection=='Individual')
+                {
+                    $feeReceiptsMonthly=$this->FeeCategories->get($fee_category_id,[
+                            'contain' => ['FeeTypes'=>function($q) use($session_year_id,$date_from,$date_to,$medium_id,$student_class_id,$stream_id,$fee_category_id,$payment_type){
+                            return $q
+                                    ->contain(['FeeReceiptDatas'=>function($q) use($session_year_id,$date_from,$date_to,$medium_id,$student_class_id,$stream_id,$fee_category_id,$payment_type){
+                                     $q->where(['payment_type IN'=>$payment_type])
+                                        ->where(['FeeReceiptDatas.is_deleted'=>'N','FeeReceiptDatas.session_year_id'=>$session_year_id])
+                                        ->where(['FeeReceiptDatas.receipt_date >='=>$date_from,'FeeReceiptDatas.receipt_date <='=>$date_to]);
+                                        $q->contain(['StudentInfos'=>function($q)use($medium_id,$student_class_id,$stream_id){
+                                            $q->select(['StudentInfos.id','StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.stream_id']);
+                                            if($medium_id!="-")
+                                            {
+                                                $q->where(['medium_id'=>$medium_id]);
+                                            }
+                                            if($student_class_id!="-")
+                                            {
+                                                $q->where(['student_class_id'=>$student_class_id]);
+                                            }
+                                            if($stream_id!="-")
+                                            {
+                                                $q->where(['stream_id'=>$stream_id]);
+                                            }
+                                            $q->contain(['Mediums','Streams','Students','StudentClasses']);
+                                            return $q;
+                                        }]);
+                                        return $q;
+                            }])
+                            ->where(['FeeTypes.is_deleted'=>'N','FeeTypes.session_year_id'=>$session_year_id])
+                            ->order('FeeReceiptDatas.receipt_date');
+                        }]
+                    ]);
+                    
+                    foreach ($feeReceiptsMonthly->fee_types as $fee_receipt)
+                    { //echo $fee_receipt->fee_receipt_data->total_amount;
+                        $dailyCollection[strtotime($fee_receipt->fee_receipt_data->receipt_date)][$srno]=['receipt_no'=>$fee_receipt->fee_receipt_data->receipt_no,'concession_amount'=>$fee_receipt->fee_receipt_data->concession_amount,'name'=>$fee_receipt->fee_receipt_data->student_info->student->name,'father_name'=>$fee_receipt->fee_receipt_data->student_info->student->father_name,'scholar_no'=>$fee_receipt->fee_receipt_data->student_info->student->scholar_no,'date'=>$fee_receipt->fee_receipt_data->receipt_date,'fine_amount'=>$fee_receipt->fee_receipt_data->fine_amount,'amount'=>$fee_receipt->fee_receipt_data->amount,'total_amount'=>$fee_receipt->fee_receipt_data->total_amount,'class'=>@$fee_receipt->fee_receipt_data->student_info->student_class->name,'stream'=>@$fee_receipt->fee_receipt_data->student_info->stream->name,'pay_mode'=>$fee_receipt->fee_receipt_data->payment_type,'cheque_no'=>$fee_receipt->fee_receipt_data->cheque_no,'bank'=>$fee_receipt->fee_receipt_data->bank,'cheque_date'=>$fee_receipt->fee_receipt_data->cheque_date,'transaction_no'=>$fee_receipt->fee_receipt_data->transaction_no,'fee_type'=>$fee_receipt->name];
+                        $srno++;
+                    }
+                }
+                else
+                {
+                    $feeReceipts=$this->FeeCategories->get($feeCategory->id,[
+                            'contain' => ['FeeReceipts'=>function($q) use($session_year_id,$date_from,$date_to,$medium_id,$student_class_id,$stream_id,$fee_category_id,$payment_type){
+                                    $q->where(['FeeReceipts.is_deleted'=>'N','FeeReceipts.session_year_id'=>$session_year_id])
+                                        ->where(['payment_type IN'=>$payment_type])
+                                        ->where(['FeeReceipts.receipt_date >='=>$date_from,'FeeReceipts.receipt_date <='=>$date_to])
+                                        ->order('FeeReceipts.receipt_date');
+                                       
+                                       $q->leftJoinWith('StudentInfos',function($q)use($medium_id,$student_class_id,$stream_id){
+                                            $q->select(['StudentInfos.id','StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.stream_id']);
+                                            if($medium_id!="-")
+                                            {
+                                                $q->where(['medium_id'=>$medium_id]);
+                                            }
+                                            if($student_class_id!="-")
+                                            {
+                                                $q->where(['student_class_id'=>$student_class_id]);
+                                            }
+                                            if($stream_id!="-")
+                                            {
+                                                $q->where(['stream_id'=>$stream_id]);
+                                            }
+                                            $q->contain(['Mediums','Streams','Students','StudentClasses']);
+                                            return $q;
+                                        });
+                                        return $q;
+                                        
+                            }]
+                    ]);
+                    foreach ($feeReceipts->fee_receipts as $fee_receipt)
+                    {
+                        $dailyCollection[$feeReceipts->name][strtotime($fee_receipt->receipt_date)][$srno]=['receipt_no'=>$fee_receipt->receipt_no,'concession_amount'=>$fee_receipt->concession_amount,'name'=>@$fee_receipt->student_info->student->name,'father_name'=>@$fee_receipt->student_info->student->father_name,'scholar_no'=>@$fee_receipt->student_info->student->scholar_no,'date'=>$fee_receipt->receipt_date,'fine_amount'=>$fee_receipt->fine_amount,'amount'=>$fee_receipt->amount,'total_amount'=>$fee_receipt->total_amount,'class'=>@$fee_receipt->student_info->student_class->name,'stream'=>@$fee_receipt->student_info->stream->name,'pay_mode'=>$fee_receipt->payment_type,'cheque_no'=>$fee_receipt->cheque_no,'bank'=>$fee_receipt->bank,'cheque_date'=>$fee_receipt->cheque_date,'transaction_no'=>$fee_receipt->transaction_no,'fee_type'=>$feeReceipts->name];
+                        $srno++;
+                    }
+                }
+            }
+            
+        
+        ksort($dailyCollection);
+      
+        $mediums = $this->FeeCategories->Mediums->find('list')->where(['is_deleted'=>'N']);
+        $studentClasses = $this->FeeCategories->StudentClasses->find('list')->where(['is_deleted'=>'N']);
+        $streams = $this->FeeCategories->Streams->find('list')->where(['is_deleted'=>'N']);
+        $this->set(compact('dailyCollection','date_from','date_to','mediums','getFeeCategories','studentClasses','streams','expenses'));
+    }
+
     public function receiptDetail()
     {
          $dailyCollection=[];
@@ -87,10 +194,15 @@ class FeeCategoriesController extends AppController
             $student_class_id=$this->request->getData('student_class_id');
             $stream_id=$this->request->getData('stream_id');
             $payment_type=$this->request->getData('payment_type');
+
+            //pr($payment_type);exit;
             
             $daterange=explode('/',$this->request->getData('daterange'));
             $date_from=date('Y-m-d',strtotime($daterange[0]));
             $date_to=date('Y-m-d',strtotime($daterange[1]));
+
+            //pr($date_to);exit;
+
             
             $expenses=$this->FeeCategories->Expenses->find();
                 $expenses->where(['Expenses.expense_date >='=>$date_from,'Expenses.expense_date <='=>$date_to,'payment_mode'=>'Cash'])
@@ -185,7 +297,7 @@ class FeeCategoriesController extends AppController
         $mediums = $this->FeeCategories->Mediums->find('list')->where(['is_deleted'=>'N']);
         $studentClasses = $this->FeeCategories->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         $streams = $this->FeeCategories->Streams->find('list')->where(['is_deleted'=>'N']);
-        $this->set(compact('dailyCollection','date_from','date_to','mediums','getFeeCategories','studentClasses','streams','expenses'));
+        $this->set(compact('dailyCollection','date_from','date_to','mediums','getFeeCategories','studentClasses','streams','expenses','medium_id','student_class_id','stream_id','payment_type'));
     }
     public function searchReceipt()
     {
@@ -211,6 +323,24 @@ class FeeCategoriesController extends AppController
             //pr($feeReceipts->toArray()); exit;
             $this->set(compact('feeReceipts','date_from','date_to'));
         }
+    }
+    public function exportNonScholarRegister()
+    {
+         $this->viewBuilder()->layout('');
+        $dailyCollection=[];
+        $session_year_id = $this->Auth->User('session_year_id');
+       
+                $date_from=date('Y-m-d');
+                $date_to=date('Y-m-d');
+           
+            $feeReceipts=$this->FeeCategories->FeeReceipts->find();
+                $feeReceipts->where(['FeeReceipts.is_deleted'=>'N','FeeReceipts.session_year_id'=>$session_year_id]);
+                $feeReceipts->where(['FeeReceipts.receipt_date >='=>$date_from,'FeeReceipts.receipt_date <='=>$date_to]);
+                $feeReceipts->where(['FeeReceipts.enquiry_form_student_id IS'=>NULL,'FeeReceipts.old_fee_id IS'=>NULL,'FeeReceipts.student_info_id IS'=>NULL]);
+                $feeReceipts->contain(['FeeReceiptRows'=>['FeeTypeMasterRows'=>['FeeTypeMasters'=>'FeeTypes']]]);
+                $feeReceipts->order(['FeeReceipts.receipt_date'=>'ASC']);
+            $this->set(compact('feeReceipts','date_from','date_to'));
+        
     }
     public function nonScholarRegister()
     {
@@ -359,6 +489,141 @@ class FeeCategoriesController extends AppController
             $this->set(compact('dailyCollection','feeGrossReceipts','feeGrossReceiptsMonthly','date_from','date_to'));
         }
     }
+
+    public function exportConcessionListReport($medium_id,$student_class_id,$stream_id,$fee_type_role_id,$fee_category_id,$daterange)
+    {
+        $this->viewBuilder()->layout('index_layout');
+        $dailyCollection=[];
+        $session_year_id = $this->Auth->User('session_year_id');
+        
+            
+            $date_from=date('Y-m-d',strtotime($daterange[0]));
+            $date_to=date('Y-m-d',strtotime($daterange[1]));
+            if($fee_type_role_ids!="-")
+            {
+                $getFeeTypeRoles = $this->FeeCategories->FeeTypes->find()
+                            ->select(['fee_category_id'])
+                            ->where(['fee_type_role_id IN'=>$fee_type_role_ids])
+                            ->first();
+                $fee_category_ids[]=$getFeeTypeRoles->fee_category_id;
+            }
+            
+            $getFeeCategories = $this->FeeCategories->find()->where(['id IN'=>$fee_category_ids]);
+            $getFeeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>['FeeTypeRoles']]);
+
+            foreach ($getFeeCategories as $feeCategory) {
+                $fee_category_id=$feeCategory->id;
+                if($feeCategory->fee_collection=='Individual')
+                {
+                    $feeReceiptsMonthly=$this->FeeCategories->get($fee_category_id,[
+                            'contain' => ['FeeTypes'=>function($q) use($session_year_id,$date_from,$date_to,$fee_type_role_ids,$medium_id,$student_class_id,$stream_id,$fee_category_id){
+                            return $q->where(['FeeTypes.fee_type_role_id IN'=>$fee_type_role_ids])
+                                    ->contain(['FeeReceiptDatas'=>function($q) use($session_year_id,$date_from,$date_to,$medium_id,$student_class_id,$stream_id,$fee_category_id){
+                                     $q->select(['FeeReceiptDatas.receipt_date','FeeReceiptDatas.id',
+                                                'FeeReceiptDatas.fee_category_id',
+                                                'FeeReceiptDatas.fee_type_role_id',
+                                                'FeeReceiptDatas.id','concession_amount','receipt_no'
+                                                ])
+                                        ->where(['FeeReceiptDatas.is_deleted'=>'N','FeeReceiptDatas.session_year_id'=>$session_year_id])
+                                        ->where(['FeeReceiptDatas.receipt_date >='=>$date_from,'FeeReceiptDatas.receipt_date <='=>$date_to]);
+                                        $q->contain(['StudentInfos'=>function($q)use($medium_id,$student_class_id,$stream_id){
+                                            $q->select(['StudentInfos.id','StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.stream_id']);
+                                            if(!empty($medium_id))
+                                            {
+                                                $q->where(['medium_id'=>$medium_id]);
+                                            }
+                                            if(!empty($student_class_id))
+                                            {
+                                                $q->where(['student_class_id'=>$student_class_id]);
+                                            }
+                                            if(!empty($stream_id))
+                                            {
+                                                $q->where(['stream_id'=>$stream_id]);
+                                            }
+                                            $q->contain(['Mediums','Streams','Students']);
+                                            return $q;
+                                        }]);
+                                        return $q;
+                            }])
+                            ->where(['FeeTypes.is_deleted'=>'N','FeeTypes.session_year_id'=>$session_year_id])
+                            ->order('FeeReceiptDatas.receipt_date')
+                            ->having(['FeeReceiptDatas.concession_amount >'=>0]);
+                        }]
+                    ]);
+                   // pr($feeReceiptsMonthly->toArray());
+                    $srno=0;
+                    foreach ($feeReceiptsMonthly->fee_types as $fee_receipt)
+                    {
+                        if(!empty($fee_receipt->fee_receipt_data->student_info->stream->name))
+                        {
+                            $dailyCollection[$fee_receipt->fee_receipt_data->student_info->student_class_id][$fee_receipt->fee_receipt_data->student_info->stream->name][$srno]=['receipt_no'=>$fee_receipt->fee_receipt_data->receipt_no,'concession_amount'=>$fee_receipt->fee_receipt_data->concession_amount,'name'=>$fee_receipt->fee_receipt_data->student_info->student->name,'father_name'=>$fee_receipt->fee_receipt_data->student_info->student->father_name,'scholar_no'=>$fee_receipt->fee_receipt_data->student_info->student->scholar_no,'date'=>$fee_receipt->fee_receipt_data->receipt_date];
+                        }
+                        else
+                        {
+
+                            $dailyCollection[$fee_receipt->fee_receipt_data->student_info->student_class_id][$srno]=['receipt_no'=>$fee_receipt->fee_receipt_data->receipt_no,'concession_amount'=>$fee_receipt->fee_receipt_data->concession_amount,'name'=>$fee_receipt->fee_receipt_data->student_info->student->name,'father_name'=>$fee_receipt->fee_receipt_data->student_info->student->father_name,'scholar_no'=>$fee_receipt->fee_receipt_data->student_info->student->scholar_no,'date'=>$fee_receipt->fee_receipt_data->receipt_date];
+                        }
+                        $srno++;
+                    }
+                }
+                else
+                {
+                    $feeReceipts=$this->FeeCategories->get($feeCategory->id,[
+                            'contain' => ['FeeReceipts'=>function($q) use($session_year_id,$date_from,$date_to,$medium_id,$student_class_id,$stream_id,$fee_category_id){
+                                    $q->where(['FeeReceipts.is_deleted'=>'N','FeeReceipts.session_year_id'=>$session_year_id])
+                                        ->where(['FeeReceipts.receipt_date >='=>$date_from,'FeeReceipts.receipt_date <='=>$date_to])
+                                        ->order('FeeReceipts.receipt_date')
+                                        ->having(['FeeReceipts.concession_amount >'=>0]);
+                                       $q->contain(['StudentInfos'=>function($q)use($medium_id,$student_class_id,$stream_id){
+                                            $q->select(['StudentInfos.id','StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.stream_id']);
+                                            if(!empty($medium_id))
+                                            {
+                                                $q->where(['medium_id'=>$medium_id]);
+                                            }
+                                            if(!empty($student_class_id))
+                                            {
+                                                $q->where(['student_class_id'=>$student_class_id]);
+                                            }
+                                            if(!empty($stream_id))
+                                            {
+                                                $q->where(['stream_id'=>$stream_id]);
+                                            }
+                                            $q->contain(['Mediums','Streams','Students']);
+                                            return $q;
+                                        }]);
+                                        return $q;
+                                        
+                            }]
+                    ]);
+                    $srno=0;
+                    foreach ($feeReceipts->fee_receipts as $fee_receipt)
+                    {
+                        if(!empty($fee_receipt->student_info->stream))
+                        {
+                            $dailyCollection[$fee_receipt->student_info->student_class_id][$fee_receipt->student_info->stream->name][$srno]=['receipt_no'=>$fee_receipt->receipt_no,'concession_amount'=>$fee_receipt->concession_amount,'name'=>$fee_receipt->student_info->student->name,'father_name'=>$fee_receipt->student_info->student->father_name,'scholar_no'=>$fee_receipt->student_info->student->scholar_no,'date'=>$fee_receipt->receipt_date,'stream'=>''];
+                        }
+                        else
+                        {
+                            $dailyCollection[$fee_receipt->student_info->student_class_id][$srno]=['receipt_no'=>$fee_receipt->receipt_no,'concession_amount'=>$fee_receipt->concession_amount,'name'=>$fee_receipt->student_info->student->name,'father_name'=>$fee_receipt->student_info->student->father_name,'scholar_no'=>$fee_receipt->student_info->student->scholar_no,'date'=>$fee_receipt->receipt_date];
+                        }
+
+                        $srno++;
+                    }
+                }
+            }
+            
+        
+        
+        ksort($dailyCollection);
+        $feeTypeRoles = $this->FeeCategories->FeeTypes->FeeTypeRoles->find();
+        $feeCategories = $this->FeeCategories->find()->where(['id !='=>2]);
+        $feeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
+        $mediums = $this->FeeCategories->Mediums->find('list')->where(['is_deleted'=>'N']);
+        $studentClasses = $this->FeeCategories->StudentClasses->find('list')->where(['is_deleted'=>'N']);
+        $streams = $this->FeeCategories->Streams->find('list')->where(['is_deleted'=>'N']);
+        $this->set(compact('dailyCollection','date_from','date_to','feeCategories','feeTypeRoles','mediums','getFeeCategories','studentClasses','streams'));
+    }
+
     public function concessionList()
     {
         $dailyCollection=[];
@@ -495,7 +760,7 @@ class FeeCategoriesController extends AppController
         $mediums = $this->FeeCategories->Mediums->find('list')->where(['is_deleted'=>'N']);
         $studentClasses = $this->FeeCategories->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         $streams = $this->FeeCategories->Streams->find('list')->where(['is_deleted'=>'N']);
-        $this->set(compact('dailyCollection','date_from','date_to','feeCategories','feeTypeRoles','mediums','getFeeCategories','studentClasses','streams'));
+        $this->set(compact('dailyCollection','date_from','date_to','feeCategories','feeTypeRoles','mediums','getFeeCategories','studentClasses','streams','fee_type_role_ids','fee_category_id','medium_id','stream_id','student_class_id','daterange'));
     }
     public function feeComponentLedger()
     {

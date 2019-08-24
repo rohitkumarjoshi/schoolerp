@@ -8,6 +8,28 @@
         <div class="box box-primary">
             <div class="box-header with-border" >
                 <label >Concession List </label>
+                
+                <label >Student Ledger </label>
+                <div class="action pull-right">
+                    <?php 
+                    if(empty($medium_id))
+                        $medium_id="-";
+                    if(empty($student_class_id))
+                         $student_class_id="-";
+                    if(empty($stream_id))
+                         $stream_id="-"; 
+                    if(empty($fee_type_role_id))
+                         $fee_type_role_id="-"; 
+                     if(empty($stream_id))
+                         $stream_id="-";
+                     if(empty($fee_category_id))
+                         $fee_category_id="-"; 
+                     if(empty($daterange))
+                         $daterange="-"; 
+
+                    ?>
+                    <?php echo $this->Html->link('Excel',['controller'=>'FeeCategories','action' => 'exportConcessionListReport',@$medium_id,@$student_class_id,@$stream_id,@$fee_type_role_id,@$fee_category_id,@$daterange],['target'=>'_blank']); ?>
+                </div>
             </div>
             <div class="box-body">
                 <?= $this->Form->create('',['id'=>'ServiceForm']) ?>

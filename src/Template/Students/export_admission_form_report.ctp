@@ -1,48 +1,23 @@
-<style type="text/css">
-    th {
-    font-weight: 700 !important;
-}
-</style>
-<div class="row">
-    <div class="col-md-12">
-        <div class="box box-primary">
-            <div class="box-header with-border" >
-                <label >Admission Form Report </label>
-                <div class="action pull-right">
-                    <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportAdmissionFormReport'],['target'=>'_blank']); ?>
-                </div>
-            </div>
-            <div class="box-body">
-                <?= $this->Form->create('',['id'=>'ServiceForm']) ?>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label class="control-label"> Class </label>
-                            <?php echo $this->Form->control('student_class_id',[
-                            'label' => false,'class'=>'form-control','empty'=>'---Select Class---','id'=>'student_class_id']);?>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="control-label">Entrance Exam Result </label>
-                            <?= $this->Form->control('entrance_exam_resulte',['empty'=>'---Select Result---','options' => ['Passed'=>'Passed','Hold'=>'Hold','Pending'=>'Pending','Faild'=>'Faild'],'class'=>'form-control ','label'=>false,'style'=>'width:100%']) ?>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="control-label">Admission Generated </label>
-                             <?= $this->Form->control('admission_generated',['empty'=>'---Select Status---','options' => ['Y'=>'Yes','N'=>'No'],'class'=>'form-control ','label'=>false,'style'=>'width:100%']) ?>
-                        </div>
-                        <div class="col-md-3"><br/>
-                            <?php echo $this->Form->button('View',['class'=>'btn button','id'=>'submit_member']); ?>
-                        </div>
-                    </div>
-                </div>
-                <?= $this->Form->end() ?>
-                <?php
-                if(!empty($enquiryFormStudents))
-                { ?>
-                    <div class="row">
-                        <div class="col-md-12">
-                           <div class="box-body table-responsive content-scroll" style="width: 100% !important;">
-                               <table class="table" >
-                                    <thead>
+<?php 
+
+	$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Admission Form Report".$date.'_'.$time;
+
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" );
+//pr($OrderAcceptances->toArray()); exit;
+?>
+
+
+<table border="1">
+          <thead>
                                         <tr style="white-space: nowrap;">
                                             <th>#</th>
                                             <th scope="col"><?=__('Enquiry No.')?></th>
@@ -76,14 +51,6 @@
                                         </tr>
                                         <?php }?>
                                     </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                   
-                <?php
-                } ?>
-            </div>
-        </div>
-    </div>
-</div>
+
+      </table>
+			

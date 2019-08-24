@@ -34,6 +34,16 @@ class EnquiryFormStudentsController extends AppController
         //$enquiryStatuses = array('Pending'=>'Pending','Approved'=>'Approved','Reject'=>'Reject','Hold'=>'Hold');
         $this->set(compact('enquiryFormStudents','studentClasses','enquiryStatuses'));
     }
+    public function exportEnquiryReport()
+    {
+        $this->viewBuilder()->layout('');
+        $session_year_id = $this->Auth->User('session_year_id');
+        $enquiryFormStudents = $this->EnquiryFormStudents->find();
+        $enquiryFormStudents->where(['EnquiryFormStudents.session_year_id'=>$session_year_id,'enquiry_no >'=>0])->contain(['Genders','Mediums','StudentClasses']);
+        $studentClasses  = $this->EnquiryFormStudents->StudentClasses->find('list')->where(['is_deleted'=>'N']);
+        /*$enquiryStatuses = array('Pending'=>'Pending','Approved'=>'Approved','Reject'=>'Reject','Hold'=>'Hold');*/
+        $this->set(compact('enquiryFormStudents','studentClasses','enquiryStatuses'));
+    }
     public function enquiryReport()
     {
         $session_year_id = $this->Auth->User('session_year_id');

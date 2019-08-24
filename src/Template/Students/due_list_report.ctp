@@ -18,6 +18,14 @@ use Cake\Controller\Component;
             <div class="box-header with-border" >
                 <label >Due List</label>
             </div>
+            <div class="actions">
+                    <div class="actions">
+                     <!-- <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportDueListReport'],['target'=>'_blank']); ?> -->
+                     <button onclick="exportTableToExcel('due')">Export Table Data To Excel File</button>
+
+
+
+            </div>
             <div class="box-body">
                 <?= $this->Form->create('form1',['class'=>'FormSubmit','id'=>'ServiceForm']) ?>
                 <div class="form-group hide_print">    
@@ -106,7 +114,7 @@ use Cake\Controller\Component;
                                 <div class="col-md-12 <?php echo "div".$div; ?>">
                                 <p><h4>Class:- <?= h($studentClass->name) ?> <?php if(!empty($section_id)){echo $section_data[$section_id]; }?></h4></p>
                                
-                                <table class="table table-bordered" style="text-align: center !important;">
+                                <table class="table table-bordered" style="text-align: center !important;" id="due">
                                     <thead>
                                         <tr>
                                             <th style="text-align: center;">S.No.</th>
@@ -346,9 +354,43 @@ use Cake\Controller\Component;
 </div>
 <?= $this->element('validate') ?> 
 <?= $this->element('icheck') ?>
+<script type="text/javascript">
+   function exportTableToExcel(due, filename = 'DueListReport'){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+    
+    // Specify file name
+    filename = filename?filename+'.xls':'excel_data.xls';
+    
+    // Create download link element
+    downloadLink = document.createElement("a");
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+    
+        // Setting the file name
+        downloadLink.download = filename;
+        
+        //triggering the function
+        downloadLink.click();
+    }
+}
+</script>
+
 <?php
 $js="
 $(document).ready(function(){
+    
      $('#ServiceForm').validate({ 
         rules: {
             'fee_category_id[]': {

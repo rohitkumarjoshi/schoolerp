@@ -1,41 +1,23 @@
-<?php echo $this->Html->css('mystyles'); ?>
-<?php
-use Cake\Controller\Component;
- 
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Book $book
- */
-?>
-<style type="text/css">
-    .form-control{
-        margin-bottom: 5px;
-    }
-</style>
-<div class="row">
-    <div class="col-md-12">
-        <div class="box box-primary">
-            <div class="box-header with-border" >
-                <label >Old Due List</label>
-                 <div class="action pull-right">
-                    <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportOldDueListReport'],['target'=>'_blank']); ?>
-                </div>
-            </div>
-            <div class="box-body">
+<?php 
 
-                <?php
-                    if(@sizeof(@$students) > 0 ){ ?>
-                <div class="pull-right box-tools">
-                    <?= $this->Html->link('Print','javascript:window.print();',['escape'=>false,'class'=>'btn bg-maroon hide_print','style'=>'color:#fff !important;']) ?>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <center>
-                                <h3>Old Due Report</h3>
-                            </center>
-                            <table class="table table-bordered" style="text-align: center !important;">
-                                <thead>
+	$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Old Due List Report".$date.'_'.$time;
+
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" );
+//pr($OrderAcceptances->toArray()); exit;
+?>
+
+
+<table border="1">
+        <thead>
                                     <tr>
                                         <th style="text-align: center;">S.No.</th>
                                         <th style="text-align: center;">Scholar No.</th>
@@ -96,44 +78,6 @@ use Cake\Controller\Component;
                                         <th style="text-align: right;"><h4><?= $this->Number->format($totaldue) ?></h3></th>
                                     </tr>
                                 </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <?php
-                }
-                ?>
-            </div>
-        </div>
-    </div>
-</div>
-<?php
-$js="
-$(document).ready(function(){
-     
-    $(document).on('change', '#medium_id', function(e){
-        var medium_id = $(this).val();
-        url = '".$this->Url->build(['controller'=>'FeeTypeMasters','action'=>'getClass.json'])."';
-        $.post(
-            url, 
-            {medium_id: medium_id}, 
-            function(result) {
-                var obj = JSON.parse(JSON.stringify(result));
-                $('#student_class_id').html(obj.response);
-        });
-    });
-    $(document).on('change', '#student_class_id', function(e){
-        var student_class_id = $(this).val();
-        url = '".$this->Url->build(['controller'=>'FeeTypeMasters','action'=>'getStream.json'])."';
-        $.post(
-            url, 
-            {student_class_id: student_class_id}, 
-            function(result) {
-                var obj = JSON.parse(JSON.stringify(result));
-                $('#stream_id').html(obj.response);
-        });
-    });
-});";
-$this->Html->scriptBlock($js,['block'=>'block_js']);
-?>
 
+      </table>
+			

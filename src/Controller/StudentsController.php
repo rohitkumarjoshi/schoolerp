@@ -589,6 +589,15 @@ class StudentsController extends AppController
     public function admissionForm()
     {
     }
+    public function exportAdmissionFormReport()
+    {
+         $this->viewBuilder()->layout('');
+        $session_year_id = $this->Auth->User('session_year_id');
+        $enquiryFormStudents = $this->Students->EnquiryForms->find();
+        $enquiryFormStudents->where(['EnquiryForms.session_year_id'=>$session_year_id,'admission_form_no >'=>0])->contain(['Genders','Mediums','StudentClasses']);
+       
+        $this->set(compact('enquiryFormStudents','studentClasses','enquiryStatuses'));
+    }
     public function admissionFormReport()
     {
         $session_year_id = $this->Auth->User('session_year_id');
@@ -1370,6 +1379,22 @@ class StudentsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+     public function exportOldDueListReport()
+    {
+         $this->viewBuilder()->layout('');
+        $session_year_id=$this->Auth->User('session_year_id');
+        
+           
+        $students=$this->Students->find();
+        $students->contain(['StudentInfos'=>['StudentClasses'],'OldFees'=>['FeeCategories','FeeReceipts'=>function($q){
+            return $q->select(['FeeReceipts.old_fee_id','total_submit'=>$q->func()->sum('FeeReceipts.amount')])->group('FeeReceipts.old_fee_id');
+        }]]) 
+        ->innerJoinWith('OldFees')  
+        ->innerJoinWith('StudentInfos')  
+        ->group('Students.id');  
+        $this->set(compact('mediums','feeCategories','feeTypeRoles','students','sessionYears'));
+    }
     public function oldDueListReport()
     {
         $session_year_id=$this->Auth->User('session_year_id');
@@ -1470,6 +1495,65 @@ class StudentsController extends AppController
         $this->set(compact('mediums','feeCategories','feeMonths','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids'));
     } */
 	
+    //  public function exportDueListReport()
+    // {
+    //    $this->viewBuilder()->layout('');
+        
+    //      $sessionYears=$this->Auth->User('session_year_id');
+    //     $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
+    //      $section_data=[];
+    //     $feeMonths=$this->Students->StudentInfos->FeeReceipts->FeeTypeMasters->FeeTypeMasterRows->FeeMonths->find('list')->select(['id','name'])->order(['id'=>'ASC']);
+
+    //     $feeTypeRoles = $this->Students->StudentInfos->FeeReceipts->FeeCategories->FeeTypes->FeeTypeRoles->find();
+    //     $feeCategories = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find();
+    //     $feeCategories->where(['id !='=>5,'is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
+    //     //pr($feeCategories->toArray());exit;
+    //     $sections = $this->Students->StudentInfos->Sections->find('list')->where(['is_deleted'=>'N']);
+    //     foreach($sections as $key=>$data){
+    //         $section_data[$key]=$data;
+    //     }
+        
+    //     $studentInfos =array();
+    //     if ($this->request->is(['patch', 'post', 'put'])) {
+            
+    //       //pr($this->request->getData());exit;
+    //         $medium_id= $this->request->getData('medium_id');
+    //         $student_class_id= $this->request->getData('student_class_id');
+    //         $stream_id= $this->request->getData('stream_id');
+    //         $month_id= $this->request->getData('month_id');
+    //         $fee_category_ids=$this->request->getData('fee_category_id');
+    //         //pr($fee_category_ids);exit;
+    //         $section_id=$this->request->getData('section_id');
+    //         $categoryData = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find()->where(['FeeCategories.id IN'=>$fee_category_ids]);
+
+    //         $studentClasses = $this->Students->StudentInfos->StudentClasses->find();
+    //             if($student_class_id)
+    //             {
+    //                 $studentClasses->where(['StudentClasses.id'=>$student_class_id]);
+    //             }
+    //             $studentClasses->contain(['StudentInfos'=>function($q)use($medium_id,$stream_id,$section_id){
+    //                     if($medium_id)
+    //                     {
+    //                         $q->where(['StudentInfos.medium_id'=>$medium_id]);
+    //                     }
+    //                     if($stream_id)
+    //                     {
+    //                         $q->where(['StudentInfos.stream_id'=>$stream_id]);
+    //                     }  
+    //                     if($section_id)
+    //                     {
+    //                         $q->where(['StudentInfos.section_id'=>$section_id]);
+    //                     } 
+    //                 return $q->contain(['Students'=>['OldFees']]);
+    //             }]);
+    //             //pr($studentClasses->toArray()); exit;
+    //        /* $studentInfos = $this->Students->StudentInfos->find()->contain(['StudentClasses','Sections','Streams','Students'])->where($condition)->order(['StudentInfos.student_class_id'=>'ASC']); */ 
+    //     } 
+    //     $Component = $this->FeeReceipt;
+        
+    //     $this->set(compact('feeCategories','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids','sections','section_id','section_data'));
+    // }  
+
 	 public function dueListReport()
     {
         $sessionYears=$this->Auth->User('session_year_id');
@@ -1488,7 +1572,7 @@ class StudentsController extends AppController
         $studentInfos =array();
         if ($this->request->is(['patch', 'post', 'put'])) {
             
-          // pr($this->request->getData());exit;
+           //pr($this->request->getData());exit;
             $medium_id= $this->request->getData('medium_id');
             $student_class_id= $this->request->getData('student_class_id');
             $stream_id= $this->request->getData('stream_id');
@@ -1523,6 +1607,57 @@ class StudentsController extends AppController
         $Component = $this->FeeReceipt;
 		
         $this->set(compact('mediums','feeCategories','feeMonths','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids','sections','section_id','section_data'));
+    }
+
+     public function exportStudentLedgerReport($medium_id,$student_class_id,$stream_id)
+    {
+        $this->viewBuilder()->layout('');
+        $session_year_id = $this->Auth->User('session_year_id');
+            
+            //$date_from=date('Y-m-d',strtotime($daterange[0]));
+            //$date_to=date('Y-m-d',strtotime($daterange[1]));
+            $studentLedgers = $this->Students->StudentInfos->find();
+                if($medium_id!="null")
+                {
+                    $studentLedgers->where(['StudentInfos.medium_id'=>$medium_id]);
+                }
+                if($student_class_id!="null")
+                {
+                    $studentLedgers->where(['StudentInfos.student_class_id'=>$student_class_id]);
+                }
+                if($stream_id!="null")
+                {
+                    $studentLedgers->where(['StudentInfos.stream_id'=>$stream_id]);
+                }
+                $studentLedgers->where(['StudentInfos.session_year_id'=>$session_year_id]);
+                $studentLedgers->contain(['Mediums','StudentClasses','Streams','Students'=>function($q)use($session_year_id){
+                    return $q->select(['Students.name','Students.scholar_no'])->contain(['EnquiryReceipts'=>function($q)use($session_year_id){
+                        return $q->where(['EnquiryReceipts.session_year_id'=>$session_year_id])
+                                ->select([
+                                    'month' => 'MONTH(receipt_date)',
+                                    'total_amount' => 'EnquiryReceipts.total_amount'
+                                    ]);
+                    }]);
+                    },'FeeReceipts'=>function($q){
+                        return $q->select([
+                            'FeeReceipts.student_info_id',
+                            'month' => 'MONTH(receipt_date)',
+                            'total_amount'=>$q->func()->sum('FeeReceipts.total_amount')
+                            ])
+                            ->group(['MONTH(receipt_date)','FeeReceipts.student_info_id'])
+                            ;
+                        }
+                ]);
+                
+                $feeMonths=$this->Students->StudentInfos->FeeReceipts->FeeTypeMasters->FeeTypeMasterRows->FeeMonths->find('list', [
+                    'keyField' => 'month_number',
+                    'valueField' => 'name'
+                 ])->order(['id'=>'ASC']);//pr($studentLedgers->toArray()); exit;
+       
+        $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
+        $studentClasses = $this->Students->StudentInfos->StudentClasses->find('list')->where(['is_deleted'=>'N']);
+        $streams = $this->Students->StudentInfos->Streams->find('list')->where(['is_deleted'=>'N']);
+        $this->set(compact('date_from','date_to','mediums','studentClasses','streams','studentLedgers','feeMonths','fee_collection','medium_id','student_class_id','stream_id','daterange'));
     }
 	
     public function studentLedger()
@@ -1579,7 +1714,7 @@ class StudentsController extends AppController
         $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
         $studentClasses = $this->Students->StudentInfos->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         $streams = $this->Students->StudentInfos->Streams->find('list')->where(['is_deleted'=>'N']);
-        $this->set(compact('date_from','date_to','mediums','studentClasses','streams','studentLedgers','feeMonths','fee_collection'));
+        $this->set(compact('date_from','date_to','mediums','studentClasses','streams','studentLedgers','feeMonths','fee_collection','medium_id','student_class_id','stream_id','daterange'));
     }
     public function getStudentCharacterCertificate()
     {
@@ -1805,6 +1940,178 @@ class StudentsController extends AppController
         $feeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
         $this->set(compact('studentLedgers','feeTypeRoles','feeCategories'));
     }
+
+    public function exportStudentListReport($list_type,$medium_id,$student_class_id,$stream_id,$section_id)
+    {
+        $this->viewBuilder()->layout('index_layout');
+        $session_year_id = $this->Auth->User('session_year_id');
+        
+            $studentLists = $this->Students->AllStudentInfos->find();
+            if($medium_id !="-")
+            {
+                $studentLists->where(['AllStudentInfos.medium_id'=>$medium_id]);
+            }
+            if($student_class_id !="-")
+            {
+                $studentLists->where(['AllStudentInfos.student_class_id'=>$student_class_id]);
+            } 
+            if($section_id !="-")
+            {
+                $studentLists->where(['AllStudentInfos.section_id'=>$section_id]);
+            }
+            if($stream_id !='-')
+            {
+                $studentLists->where(['AllStudentInfos.stream_id'=>$stream_id]);
+            }
+                if($list_type=='rte')
+                {
+                    $studentLists->where(['AllStudentInfos.rte'=>'Yes','AllStudentInfos.student_status !='=>'Discontinue']);
+                }
+                else if($list_type=='discontinue')
+                {
+                    $studentLists->where(['AllStudentInfos.student_status'=>'Discontinue']);
+                }
+                else if($list_type=='new_admission')
+                {
+                    $studentLists->where(['AllStudentInfos.student_status !='=>'Discontinue']);
+                }
+                else if($list_type=='new_old_list')
+                {
+                   $studentLists->where(['AllStudentInfos.student_status !='=>'Discontinue']);
+                }
+                else if($list_type=='new_hostel' || $list_type=='new_old_hostel')
+                {
+                    $studentLists->where(['AllStudentInfos.hostel_facility'=>'Yes','AllStudentInfos.student_status !='=>'Discontinue']);
+                }
+                else if($list_type=='bus')
+                {
+                    $studentLists->where(['AllStudentInfos.bus_facility'=>'Yes','AllStudentInfos.student_status !='=>'Discontinue']);
+                }
+                else if($list_type=='pending_document')
+                {
+                    $studentLists->where(['AllStudentInfos.student_status !='=>'Discontinue']);
+                }
+            $studentLists->contain(['Mediums','StudentClasses','Streams','Sections','ReservationCategories','Castes','Religions','Students'=>function($q)use($session_year_id,$list_type){
+                    $q->select(['Students.id','Students.name','scholar_no','father_name','mother_name','registration_date','dob','parent_mobile_no','admission_class_id','gender_id','disability_id']);
+                    if($list_type=='new_admission')
+                    {
+                        $q->where(['Students.session_year_id'=>$session_year_id]);
+                    }
+                    if($list_type=='tc')
+                    {
+                        $q->innerJoinWith('TransferCertificates',function($q)use($session_year_id){
+                            return $q->where(['tc_status'=>'Success','TransferCertificates.session_year_id'=>$session_year_id]);
+                        });
+                    }
+                    else
+                    { 
+                
+                        /* $q->notMatching('TransferCertificates',function($q)use($session_year_id){
+                            return $q->where(['tc_status'=>'Success','TransferCertificates.session_year_id'=>$session_year_id]);
+                        }); */
+                    }
+                    $q->innerJoinWith('Genders');
+                    $q->leftJoinWith('Disabilities');
+                    $q->contain(['DocumentClassMappings'=>['Documents'],'StudentDocuments','Genders','Disabilities','StudentFatherProfessions'=>['StudentParentProfessions'],'StudentMotherProfessions'=>['StudentParentProfessions']]);
+                   
+                    if($list_type=='new_hostel')
+                    {
+                        $q->innerJoinWith('HostelRegistrations',function($q)use($session_year_id){
+                            return $q->where(['HostelRegistrations.session_year_id'=>$session_year_id]);
+                        });
+                    }
+                    
+                    return $q;
+                }
+            ]);
+            $studentLists->order(['AllStudentInfos.student_class_id'=>'ASC']);
+            //pr($studentLists->toArray()); exit;
+            if($list_type=='pending_document')
+            {
+                $studentLists=$studentLists->toArray();
+                foreach ($studentLists as $key=>$studentList) 
+                { 
+                    $document_class_mapping_id=[];
+                    $document_class_student_id=[];
+                    foreach ($studentList->student->document_class_mappings as $document_class_mapping) 
+                    {
+                        $document_class_mapping_id[]=$document_class_mapping->id;
+                    }
+                    foreach ($studentList->student->student_documents as $student_document)
+                    {
+                        if(!empty($student_document->document_class_mapping_id))
+                        {
+                            $document_class_student_id[]=$student_document->document_class_mapping_id;
+                        }
+                        
+                    }
+                    $result = array_diff($document_class_mapping_id, $document_class_student_id);
+                    
+                    if(empty($result))
+                    {
+                        unset($studentLists[$key]);
+                    }
+                    else
+                    {
+                        foreach ($studentList->student->document_class_mappings as $dkey=>$document_class_mapping) 
+                        {
+                            $document_class_mapping->id;
+                            if(!in_array($document_class_mapping->id,$result))
+                            {
+                                unset($studentList->student->document_class_mappings[$dkey]);
+                            }
+                        }
+                    }
+                    
+                }
+                $reindex=array_values($studentLists);
+                $studentLists = $reindex;
+            }
+            else
+            {
+                $studentLists=$studentLists->toArray();
+                foreach ($studentLists as $key=>$studentList) 
+                { 
+                    $document_class_mapping_id=[];
+                    $document_class_student_id=[];
+                    foreach ($studentList->student->document_class_mappings as $document_class_mapping) 
+                    {
+                        $document_class_mapping_id[]=$document_class_mapping->id;
+                    }
+                    foreach ($studentList->student->student_documents as $student_document)
+                    {
+                        if(!empty($student_document->document_class_mapping_id))
+                        {
+                            $document_class_student_id[]=$student_document->document_class_mapping_id;
+                        }
+                        
+                    }
+                    $result = array_diff($document_class_mapping_id, $document_class_student_id);
+                    
+                    
+                        foreach ($studentList->student->document_class_mappings as $dkey=>$document_class_mapping) 
+                        {
+                            $document_class_mapping->id;
+                            if(!in_array($document_class_mapping->id,$result))
+                            {
+                                unset($studentList->student->document_class_mappings[$dkey]);
+                            }
+                        }
+                    
+                }
+            }
+           
+        
+        $sections = $this->Students->StudentInfos->Sections->find('list')->where(['is_deleted'=>'N']);
+        foreach($sections as $key=>$data){
+            $section_data[$key]=$data;
+        }
+        $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
+        $studentClasses = $this->Students->StudentInfos->StudentClasses->find('list')->where(['is_deleted'=>'N']);
+        $streams = $this->Students->StudentInfos->Streams->find('list')->where(['is_deleted'=>'N']);
+        $this->set(compact('date_from','date_to','mediums','studentClasses','streams','studentLists','feeMonths','list_type','sections'));
+    }
+
     public function studentList()
     {
         $session_year_id = $this->Auth->User('session_year_id');
@@ -1978,7 +2285,7 @@ class StudentsController extends AppController
         $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
         $studentClasses = $this->Students->StudentInfos->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         $streams = $this->Students->StudentInfos->Streams->find('list')->where(['is_deleted'=>'N']);
-        $this->set(compact('date_from','date_to','mediums','studentClasses','streams','studentLists','feeMonths','list_type','sections'));
+        $this->set(compact('date_from','date_to','mediums','studentClasses','streams','studentLists','feeMonths','list_type','sections','student_class_id','section_id','stream_id','medium_id'));
     }
     public function summary()
     {

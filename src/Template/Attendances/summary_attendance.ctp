@@ -44,9 +44,9 @@
                                                         <td><?= @$attendance->student_info->student_class->name ?></td>
                                                         <td><?= @$attendance->student_info->section->name ?></td>
                                                         <td><?= @$attendance->count ?></td>
-                                                        <td><?= @$attendance->student_info->medium->name ?></td>
-                                                        <td><?= @$attendance->student_info->medium->name ?></td>
-                                                        
+                                                        <td>-</td>
+                                                        <td>-</td>
+                                                         
                                                 </tr>
 
                                                     <?php } ?>

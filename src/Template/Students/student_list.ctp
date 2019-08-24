@@ -8,6 +8,19 @@
         <div class="box box-primary">
             <div class="box-header with-border" >
                 <label >Student List </label>
+                <div class="action pull-right">
+                    <?php 
+                    if(empty($medium_id))
+                        $medium_id="-";
+                    if(empty($student_class_id))
+                         $student_class_id="-";
+                    if(empty($stream_id))
+                         $stream_id="-";
+                    if(empty($section_id))
+                         $section_id="-"; 
+                    ?>
+                    <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportStudentListReport',@$list_type,@$medium_id,@$student_class_id,@$stream_id,@$section_id],['target'=>'_blank']); ?>
+                </div>
             </div>
             <div class="box-body">
                 <?= $this->Form->create('',['id'=>'ServiceForm']) ?>

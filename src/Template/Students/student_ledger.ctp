@@ -7,7 +7,19 @@
     <div class="col-md-12">
         <div class="box box-primary">
             <div class="box-header with-border" >
+                
                 <label >Student Ledger </label>
+                <div class="action pull-right">
+                    <?php 
+                    if(empty($medium_id))
+                        $medium_id="null";
+                    if(empty($student_class_id))
+                         $student_class_id="null";
+                    if(empty($stream_id))
+                         $stream_id="null"; 
+                    ?>
+                    <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportStudentLedgerReport',@$medium_id,@$student_class_id,@$stream_id],['target'=>'_blank']); ?>
+                </div>
             </div>
             <div class="box-body">
                 <?= $this->Form->create('',['id'=>'ServiceForm']) ?>

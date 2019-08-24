@@ -8,6 +8,9 @@
 		<div class="box box-primary">
 			<div class="box-header with-border" >
 				<label >Non Scholars Register </label>
+                <div class="action pull-right">
+                    <?php echo $this->Html->link('Excel',['controller'=>'FeeCategories','action' => 'exportNonScholarRegister'],['target'=>'_blank']); ?>
+                </div>
 			</div>
 			<div class="box-body">
 				<?= $this->Form->create('',['id'=>'ServiceForm']) ?>
