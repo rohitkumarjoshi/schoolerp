@@ -43,6 +43,7 @@ class AttendancesController extends AppController
 
         $attendances=$this->Attendances->find()
         ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+        ->where(['Attendances.attendance_date >='=>$date_from,'Attendances.attendance_date <='=>$date_to])
         ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])->autoFields(true);
 
         $morning_p = $attendances->newExpr()
