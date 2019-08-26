@@ -26,14 +26,70 @@ class AttendancesController extends AppController
 
     public function summaryAttendance()
     {
-        $attendances=$this->Attendances->find()->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
-        ->select(['Attendances.student_info_id','count'=>'count(Attendances.first_half)'])
-        ->where(['Attendances.attendance_date'=>date('Y-m-d'),'Attendances.is_deleted'=>'N','Attendances.first_half'=>0.5])
-        ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])->autoFields(true);
-      
-       // pr($attendances->toArray());exit;
+        //$daterange=$this->request->query('daterange'); 
+        if(!empty($this->request->query('daterange')))
+        {
+         $daterange=explode('/',$this->request->query('daterange'));
+                $date_from=date('Y-m-d',strtotime($daterange[0]));
+                $date_to=date('Y-m-d',strtotime($daterange[1])); 
 
-        $this->set(compact('attendances'));
+        }
+        else
+        {
+            $date_from=date('Y-m-d');
+            $date_to=date('Y-m-d');
+        }
+
+
+        $attendances=$this->Attendances->find()
+        ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+        ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])->autoFields(true);
+
+        $morning_p = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0.5]),
+                    1,
+                    'integer'
+                );
+        $morning_a = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0]),
+                    1,
+                    'integer'
+                );
+
+        $evening_p = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.second_half' => 0.5]),
+                    1,
+                    'integer'
+                );
+        $evening_a = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.second_half' => 0]),
+                    1,
+                    'integer'
+                );
+
+        $total_student = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.student_info_id']),
+                    1,
+                    'integer'
+                );
+
+            $attendances->select([
+                'morning_p' => $attendances->func()->count($morning_p),
+                'morning_a' => $attendances->func()->count($morning_a),
+                'evening_p' => $attendances->func()->count($evening_p),
+                'evening_a' => $attendances->func()->count($evening_a),
+                'total_student' => $attendances->func()->count($total_student),
+                'Attendances.student_info_id'
+            ]);
+      
+        //pr($attendances->toArray());exit;
+
+        $this->set(compact('attendances','date_from','date_to'));
     }
 
     public function index()

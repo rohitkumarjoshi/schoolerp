@@ -493,7 +493,6 @@ class FeeCategoriesController extends AppController
     public function exportConcessionListReport()
     {
         $this->viewBuilder()->layout('');
-        $this->viewBuilder()->layout('');
         $url=$this->request->here();
         $url=parse_url($url,PHP_URL_QUERY);
     
