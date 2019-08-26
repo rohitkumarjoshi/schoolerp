@@ -40,7 +40,7 @@ class AttendancesController extends AppController
         //pr($daterange);exit;
         if ($this->request->is(['post','put'])) 
         {
-         $date=$this->request->getData('date');
+         $date=date('Y-m-d',strtotime($this->request->getData('date')));
          //pr($date);exit;
         }
         else
@@ -64,7 +64,14 @@ class AttendancesController extends AppController
                 );
         $morning_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.first_half' => 0.0,'OR'=>['Attendances.first_half'=>1]]),
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0.0]),
+                    1,
+                    'integer'
+                );
+
+        $morning_a_1 = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.first_half' => 1]),
                     1,
                     'integer'
                 );
@@ -77,7 +84,13 @@ class AttendancesController extends AppController
                 );
         $evening_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.second_half' => 0.0,'OR'=>['Attendances.first_half'=>1]]),
+                    $attendances->newExpr()->add(['Attendances.second_half' => 0.0]),
+                    1,
+                    'integer'
+                );
+        $evening_a_1 = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.second_half' => 1]),
                     1,
                     'integer'
                 );
@@ -92,8 +105,10 @@ class AttendancesController extends AppController
             $attendances->select([
                 'morning_p' => $attendances->func()->count($morning_p),
                 'morning_a' => $attendances->func()->count($morning_a),
+                'morning_a_1' => $attendances->func()->count($morning_a_1),
                 'evening_p' => $attendances->func()->count($evening_p),
                 'evening_a' => $attendances->func()->count($evening_a),
+                'evening_a_1' => $attendances->func()->count($evening_a_1),
                 'total_student' => $attendances->func()->count($total_student),
                 'Attendances.student_info_id'
             ]);

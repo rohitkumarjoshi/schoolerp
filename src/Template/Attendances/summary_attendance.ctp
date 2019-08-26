@@ -68,9 +68,9 @@
                                                         <td><?= @$attendance->student_info->student_class->name ?></td>
                                                         <td><?= @$attendance->student_info->section->name ?></td>
                                                         <td><?= @$attendance->morning_p ?></td>
-                                                        <td><?= @$attendance->morning_a ?></td>
+                                                        <td><?= @$attendance->morning_a + $attendance->morning_a_1?></td>
                                                         <td><?= @$attendance->evening_p ?></td>
-                                                        <td><?= @$attendance->evening_a ?></td>
+                                                        <td><?= @$attendance->evening_a + $attendance->evening_a_1 ?></td>
                                                         <td><?= @$attendance->total_student ?></td>
                                                          
                                                 </tr>
