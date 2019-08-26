@@ -53,7 +53,7 @@ class AttendancesController extends AppController
                 );
         $morning_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.first_half' => 0]),
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0,'Attendances.first_half'=>1]),
                     1,
                     'integer'
                 );
@@ -66,7 +66,7 @@ class AttendancesController extends AppController
                 );
         $evening_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.second_half' => 0]),
+                    $attendances->newExpr()->add(['Attendances.second_half' => 0,'Attendances.first_half'=>1]),
                     1,
                     'integer'
                 );

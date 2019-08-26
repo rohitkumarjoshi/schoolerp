@@ -77,7 +77,7 @@
                                                         <td><?= @$attendance->morning_a ?></td>
                                                         <td><?= @$attendance->evening_p ?></td>
                                                         <td><?= @$attendance->evening_a ?></td>
-                                                        <td><?= @$attendance->total_student.'/'.sum() ?></td>
+                                                        <td><?= @$attendance->total_student ?></td>
                                                          
                                                 </tr>
 
