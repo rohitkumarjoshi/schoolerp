@@ -13,10 +13,20 @@ use Cake\Event\Event;
  */
 class AttendancesController extends AppController
 {
+    
+    public function initialize()
+    {
+        parent::initialize();
+        $this->loadComponent('Csrf');
+    }
      public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
+        
         $this->Security->setConfig('unlockedActions', ['add','edit']);
+         
+        
+
     }
     /**
      * Index method
@@ -26,24 +36,23 @@ class AttendancesController extends AppController
 
     public function summaryAttendance()
     {
-        //$daterange=$this->request->query('daterange'); 
-        if(!empty($this->request->query('daterange')))
+        //pr($daterange);exit;
+        if(!empty($this->request->query('date')))
         {
-         $daterange=explode('/',$this->request->query('daterange'));
-                $date_from=date('Y-m-d',strtotime($daterange[0]));
-                $date_to=date('Y-m-d',strtotime($daterange[1])); 
-
+         $date=$this->request->query('date');
+         pr($date);exit;
         }
         else
         {
-            $date_from=date('Y-m-d');
-            $date_to=date('Y-m-d');
+            $date=date('Y-m-d');
+           
         }
+        //
 
 
         $attendances=$this->Attendances->find()
         ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
-        ->where(['Attendances.attendance_date >='=>$date_from,'Attendances.attendance_date <='=>$date_to])
+        ->where(['Attendances.attendance_date'=>$date])
         ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])->autoFields(true);
 
         $morning_p = $attendances->newExpr()
@@ -54,7 +63,7 @@ class AttendancesController extends AppController
                 );
         $morning_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.first_half' => 0,'Attendances.first_half'=>1]),
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0.0,'Attendances.first_half'=>1]),
                     1,
                     'integer'
                 );
@@ -67,7 +76,7 @@ class AttendancesController extends AppController
                 );
         $evening_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.second_half' => 0,'Attendances.first_half'=>1]),
+                    $attendances->newExpr()->add(['Attendances.second_half' => 0.0,'Attendances.second_half'=>1]),
                     1,
                     'integer'
                 );
@@ -90,7 +99,7 @@ class AttendancesController extends AppController
       
         //pr($attendances->toArray());exit;
 
-        $this->set(compact('attendances','date_from','date_to'));
+        $this->set(compact('attendances','date'));
     }
 
     public function index()

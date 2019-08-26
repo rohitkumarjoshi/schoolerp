@@ -10,27 +10,20 @@
                 <label >Attendance Summary</label>
             </div>
             <div class="box-body">
-                <?= $this->Form->create('',['id'=>'ServiceForm']) ?>
+                <?= $this->Form->create('',['id'=>'AttendanceForm']) ?>
                 <div class="form-group hide_print">
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="control-label"> Date Range</label>
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <?= $this->Form->control('daterange',['class'=>'form-control pull-left daterangepicker','label'=>false,'required'=>true,'placeholder'=>'Date range']) ?>
-                                </div>
-
-                            </div>
+                            <label class="control-label"> Date <span class="required" aria-required="true"> * </span></label>
+                                    <?php echo $this->Form->control('date[]',[
+                                    'label' => false,'class'=>'form-control datepicker','placeholder'=>'Date','type'=>'text','data-date-format'=>'dd-mm-yyyy','required','value'=>date('d-m-Y')]);?>
+                        </div>
+                        <div  class="col-md-3" style="margin-top: 24px!important;">
+                            <center>
+                                <?php echo $this->Form->button('View',['class'=>'btn button','id'=>'submit_member']); ?>
+                            </center>
                         </div>
                         
-                    </div>
-                    <div  class="row">
-                        <center>
-                            <?php echo $this->Form->button('View',['class'=>'btn button','id'=>'submit_member']); ?>
-                        </center>
                     </div>
                 </div>
                     <div class="pull-right box-tools">
@@ -40,7 +33,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <center>
-                                        <h3>Attendance Summary Report of <?= date('d-m-Y',strtotime($date_from))." To ".date('d-m-Y',strtotime($date_to)) ?></h3>
+                                        <h3>Attendance Summary Report of <?= date('d-m-Y',strtotime($date)) ?></h3>
                                     </center>
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="sample_2" width="100%">
@@ -93,5 +86,6 @@
     </div>
 </div>
  <?= $this->element('daterangepicker') ?>
+<?= $this->element('datepicker') ?> 
 <?= $this->element('data_table') ?>
 <?= $this->element('icheck') ?>
