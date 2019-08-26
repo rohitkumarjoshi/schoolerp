@@ -1554,6 +1554,67 @@ class StudentsController extends AppController
     //     $this->set(compact('feeCategories','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids','sections','section_id','section_data'));
     // }  
 
+
+    public function exportDueListReport()
+    {
+
+        $this->viewBuilder()->layout('');
+        $url=$this->request->here();
+        $url=parse_url($url,PHP_URL_QUERY);
+        $medium_id=$this->request->query('medium_id'); 
+        $student_class_id=$this->request->query('student_class_id'); 
+        $stream_id=$this->request->query('stream_id'); 
+        $month_id=$this->request->query('month_id'); 
+        $fee_category_ids=$this->request->query('fee_category_id'); 
+        $section_id=$this->request->query('section_id'); 
+
+        $sessionYears=$this->Auth->User('session_year_id');
+        $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
+         $section_data=[];
+        $feeMonths=$this->Students->StudentInfos->FeeReceipts->FeeTypeMasters->FeeTypeMasterRows->FeeMonths->find('list')->select(['id','name'])->order(['id'=>'ASC']);
+
+        $feeTypeRoles = $this->Students->StudentInfos->FeeReceipts->FeeCategories->FeeTypes->FeeTypeRoles->find();
+        $feeCategories = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find();
+        $feeCategories->where(['id !='=>5,'is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
+        $sections = $this->Students->StudentInfos->Sections->find('list')->where(['is_deleted'=>'N']);
+        foreach($sections as $key=>$data){
+            $section_data[$key]=$data;
+        }
+        
+        $studentInfos =array();
+            
+           //pr($this->request->getData());exit;
+           
+            $categoryData = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find()->where(['FeeCategories.id IN'=>$fee_category_ids]);
+
+            $studentClasses = $this->Students->StudentInfos->StudentClasses->find();
+                if($student_class_id)
+                {
+                    $studentClasses->where(['StudentClasses.id'=>$student_class_id]);
+                }
+                $studentClasses->contain(['StudentInfos'=>function($q)use($medium_id,$stream_id,$section_id){
+                        if($medium_id)
+                        {
+                            $q->where(['StudentInfos.medium_id'=>$medium_id]);
+                        }
+                        if($stream_id)
+                        {
+                            $q->where(['StudentInfos.stream_id'=>$stream_id]);
+                        }  
+                        if($section_id)
+                        {
+                            $q->where(['StudentInfos.section_id'=>$section_id]);
+                        } 
+                    return $q->contain(['Students'=>['OldFees']]);
+                }]);
+                //pr($studentClasses->toArray()); exit;
+           /* $studentInfos = $this->Students->StudentInfos->find()->contain(['StudentClasses','Sections','Streams','Students'])->where($condition)->order(['StudentInfos.student_class_id'=>'ASC']); */ 
+        
+        $Component = $this->FeeReceipt;
+        
+        $this->set(compact('mediums','feeCategories','feeMonths','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids','sections','section_id','section_data'));
+    }
+
 	 public function dueListReport()
     {
         $sessionYears=$this->Auth->User('session_year_id');
@@ -1833,8 +1894,79 @@ class StudentsController extends AppController
         $school = $this->Students->Schools->find()->first();
         $this->set(compact('studentLedgers','school'));
     }
+
+     public function exportStudentWisePaymentReport($student_id=null)
+    {
+         $this->viewBuilder()->layout('');
+            $url=$this->request->here();
+            $url=parse_url($url,PHP_URL_QUERY);
+            
+        $session_year_id = $this->Auth->User('session_year_id');
+        $medium_id=$this->request->query('medium_id');
+        $student_class_id=$this->request->query('student_class_id');
+        $stream_id=$this->request->query('stream_id');
+        
+            
+           
+            $studentLedgers = $this->Students->StudentInfos->find();
+                if(!empty($medium_id))
+                {
+                    $studentLedgers->where(['StudentInfos.medium_id'=>$medium_id]);
+                }
+                if(!empty($student_class_id))
+                {
+                    $studentLedgers->where(['StudentInfos.student_class_id'=>$student_class_id]);
+                }
+                if(!empty($stream_id))
+                {
+                    $studentLedgers->where(['StudentInfos.stream_id'=>$stream_id]);
+                }
+                $studentLedgers->where(['StudentInfos.session_year_id'=>$session_year_id]);
+                $studentLedgers->contain(['Sections','StudentClasses','Streams','Students'=>function($q)use($session_year_id){
+                    return $q->contain(['EnquiryReceipts'=>function($q)use($session_year_id){
+                        return $q->where(['EnquiryReceipts.session_year_id'=>$session_year_id])
+                                ->contain(['ReceiptFeeCategories','FeeTypeRoles']);
+                    }]);
+                    },'FeeReceipts'=>function($q){
+                        return $q->contain(['ReceiptFeeCategories','FeeTypeRoles']);
+                            
+                        }
+                ]);
+        
+                $student_id=$this->request->query('student_id');
+                if(!empty($student_id))
+                {
+                    $studentLedgers = $this->Students->StudentInfos->find();
+                        $studentLedgers->where(['StudentInfos.session_year_id'=>$session_year_id]);
+                        $studentLedgers->contain(['Sections','StudentClasses','Streams','Students'=>function($q)use($session_year_id,$student_id){
+                            if(!empty($student_id))
+                            {
+                                $student_id = $this->EncryptingDecrypting->decryptData($student_id);
+                                $q->where(['Students.id'=>$student_id]);
+                            }
+                            return $q->contain(['EnquiryReceipts'=>function($q)use($session_year_id){
+                                return $q->where(['EnquiryReceipts.session_year_id'=>$session_year_id])
+                                        ->contain(['ReceiptFeeCategories','FeeTypeRoles']);
+                            }]);
+                            },'FeeReceipts'=>function($q){
+                                return $q->contain(['ReceiptFeeCategories','FeeTypeRoles']);
+                                    
+                                }
+                        ]);
+                }
+                
+        
+      
+        $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
+        $StudentClasses = $this->Students->StudentInfos->StudentClasses->find('list')->where(['is_deleted'=>'N']);
+        $fee_type ='';
+        $streams = $this->Students->StudentInfos->Streams->find('list')->where(['is_deleted'=>'N']);
+        $this->set(compact('mediums','StudentClasses','streams','studentLedgers','feeMonths','fee_collection','fee_type'));
+    }
+
     public function studentWisePayment($student_id=null)
     {
+
         $session_year_id = $this->Auth->User('session_year_id');
         if ($this->request->is(['post','put'])) 
         {
@@ -1901,6 +2033,53 @@ class StudentsController extends AppController
         $streams = $this->Students->StudentInfos->Streams->find('list')->where(['is_deleted'=>'N']);
         $this->set(compact('mediums','StudentClasses','streams','studentLedgers','feeMonths','fee_collection','fee_type'));
     }
+
+    public function exportReceiptDeleteDetailReport()
+    {
+
+            $this->viewBuilder()->layout('');
+            $url=$this->request->here();
+            $url=parse_url($url,PHP_URL_QUERY);
+            
+            
+                $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
+                $fee_category_ids=$this->request->query('fee_category_id'); 
+                $daterange=$this->request->query('daterange'); 
+                $date_from=date('Y-m-d',strtotime($daterange[0]));
+                $date_to=date('Y-m-d',strtotime($daterange[1]));
+        
+            
+            if(!empty($fee_type_role_ids))
+            {
+                $getFeeTypeRoles = $this->FeeCategories->FeeTypes->find()
+                            ->select(['fee_category_id'])
+                            ->where(['fee_type_role_id IN'=>$fee_type_role_ids])
+                            ->first();
+                $fee_category_ids[]=$getFeeTypeRoles->fee_category_id;
+            }
+            
+            $studentLedgers = $this->Students->StudentInfos->DeleteFeeReceipts->find();
+            $studentLedgers->where(['fee_category_id IN'=>$fee_category_ids]);
+            $studentLedgers->where(['DeleteFeeReceipts.delete_date >='=>$date_from,'DeleteFeeReceipts.delete_date <='=>$date_to]);
+
+            $studentLedgers->contain([
+                    'ReceiptFeeCategories','FeeTypeRoles'
+                    ])
+                    ->leftJoinWith('StudentInfos',function($q){
+                        return $q->contain(['StudentClasses','Streams','Students']);
+                    })
+                    ->leftJoinWith('EnquiryFormStudents',function($q){
+                        return $q->contain(['StudentClasses','Streams']);
+                    });
+        
+       
+      //pr($studentLedgers->toArray());exit;
+        $feeTypeRoles = $this->Students->StudentInfos->FeeReceipts->FeeCategories->FeeTypes->FeeTypeRoles->find();
+        $feeCategories = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find();
+        $feeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
+        $this->set(compact('studentLedgers','feeTypeRoles','feeCategories'));
+    }
+
     public function receiptDeleteDetail()
     {
         if ($this->request->is(['post','put'])) 
@@ -1943,7 +2122,7 @@ class StudentsController extends AppController
 
     public function exportStudentListReport($list_type,$medium_id,$student_class_id,$stream_id,$section_id)
     {
-        $this->viewBuilder()->layout('index_layout');
+        $this->viewBuilder()->layout('');
         $session_year_id = $this->Auth->User('session_year_id');
         
             $studentLists = $this->Students->AllStudentInfos->find();

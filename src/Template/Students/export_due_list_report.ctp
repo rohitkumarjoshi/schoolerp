@@ -1,23 +1,37 @@
 <?php 
 
-	// $date= date("d-m-Y"); 
-	// $time=date('h:i:a',time());
+	$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
 
-	// $filename="Due List Report".$date.'_'.$time;
+	$filename="Due List Report".$date.'_'.$time;
 
-	// header ("Expires: 0");
-	// header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
-	// header ("Cache-Control: no-cache, must-revalidate");
-	// header ("Pragma: no-cache");
-	// header ("Content-type: application/vnd.ms-excel");
-	// header ("Content-Disposition: attachment; filename=".$filename.".xls");
-	// header ("Content-Description: Generated Report" );
-//pr($OrderAcceptances->toArray()); exit;
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" );
+
 ?>
 
-
-<table border="1">
-        <thead>
+			    <?php
+                         // pr($section_data[$section_id]); exit;
+                            $totalAmounts=0;
+                            $grand_amount=[];
+                                    $grand_old_amount=[];
+                                    $div=0;
+                            foreach ($studentClasses as $studentClass) 
+                            { 
+                                $x=0;
+                                $div++;
+                                $class_row=[];
+                                ?>
+                                <div class="col-md-12 <?php echo "div".$div; ?>">
+                                <p><h4>Class:- <?= h($studentClass->name) ?> <?php if(!empty($section_id)){echo $section_data[$section_id]; }?></h4></p>
+                               
+                                <table class="table table-bordered" style="text-align: center !important;" id="due">
+                                    <thead>
                                         <tr>
                                             <th style="text-align: center;">S.No.</th>
                                             <th style="text-align: center;">Scholar No.</th>
@@ -190,6 +204,57 @@
                                          <p><h4>Total no. of students whose fee is due :- <?= $x ?></h4></p>
                                         
                                     </tbody>
-
-      </table>
-			
+                                </table>
+                                </div>
+                                 <?php
+                                 if($x == 0)
+                                 {
+                                    ?>
+                                    <style type="text/css">
+                                        .div<?php echo $div; ?>
+                                        {
+                                            display: none;
+                                        }
+                                    </style>
+                                    <?php
+                                 }
+                                 
+                            }
+                            ?>
+                        
+                        <div class="col-md-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <?php
+                                    foreach ($feeCategories as $feeCategory) 
+                                    {
+                                        if(in_array($feeCategory->id,$fee_category_ids))
+                                        {
+                                        ?>
+                                        <th style="text-align: center;"><?= h($feeCategory->name) ?></th> 
+                                        <th style="text-align: center;">Old <?= h($feeCategory->name) ?></th> 
+                                        <?php
+                                        }
+                                    }
+                                    ?>
+                                     <th style="text-align: center;">Total</th> 
+                                </tr>
+                                <tr>
+                                    <?php
+                                    $grand_total=0;
+                                    foreach ($feeCategories as $feeCategory) 
+                                    {
+                                        if(in_array($feeCategory->id,$fee_category_ids))
+                                        {
+                                            $grand_total+=array_sum($grand_amount[$feeCategory->id]);
+                                            $grand_total+=array_sum($grand_old_amount[$feeCategory->id]);
+                                            ?>
+                                            <th style="text-align: center;"><?= $this->Number->format(array_sum($grand_amount[$feeCategory->id])) ?></th> 
+                                            <th style="text-align: center;"><?= $this->Number->format(array_sum($grand_old_amount[$feeCategory->id])) ?></th>  
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                    <th style="text-align: center;"><?= $this->Number->format($grand_total) ?></th> 
+                                </tr>
+                            </table>

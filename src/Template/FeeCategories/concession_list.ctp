@@ -10,26 +10,11 @@
                 <label >Concession List </label>
                 
                 <label >Student Ledger </label>
-                <div class="action pull-right">
-                    <?php 
-                    if(empty($medium_id))
-                        $medium_id="-";
-                    if(empty($student_class_id))
-                         $student_class_id="-";
-                    if(empty($stream_id))
-                         $stream_id="-"; 
-                    if(empty($fee_type_role_id))
-                         $fee_type_role_id="-"; 
-                     if(empty($stream_id))
-                         $stream_id="-";
-                     if(empty($fee_category_id))
-                         $fee_category_id="-"; 
-                     if(empty($daterange))
-                         $daterange="-"; 
-
-                    ?>
-                    <?php echo $this->Html->link('Excel',['controller'=>'FeeCategories','action' => 'exportConcessionListReport',@$medium_id,@$student_class_id,@$stream_id,@$fee_type_role_id,@$fee_category_id,@$daterange],['target'=>'_blank']); ?>
-                </div>
+                <div class="actions pull-right">
+                   <?php
+                   @$url_excel="/?".$url;
+                    echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/FeeCategories/exportConcessionListReport/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+               </div>
             </div>
             <div class="box-body">
                 <?= $this->Form->create('',['id'=>'ServiceForm']) ?>

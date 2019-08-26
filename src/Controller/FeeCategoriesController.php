@@ -80,7 +80,7 @@ class FeeCategoriesController extends AppController
 
       public function exportReceiptDetailReport($medium_id,$student_class_id,$stream_id,$date_from,$date_to,$payment_type)
     {
-        $this->viewBuilder()->layout('index_layout');
+        $this->viewBuilder()->layout('');
          $dailyCollection=[];
         $session_year_id = $this->Auth->User('session_year_id');
             
@@ -490,9 +490,22 @@ class FeeCategoriesController extends AppController
         }
     }
 
-    public function exportConcessionListReport($medium_id,$student_class_id,$stream_id,$fee_type_role_id,$fee_category_id,$daterange)
+    public function exportConcessionListReport()
     {
-        $this->viewBuilder()->layout('index_layout');
+        $this->viewBuilder()->layout('');
+        $this->viewBuilder()->layout('');
+        $url=$this->request->here();
+        $url=parse_url($url,PHP_URL_QUERY);
+    
+    
+        $medium_id=$this->request->query('medium_id'); 
+        $student_class_id=$this->request->query('student_class_id'); 
+        $stream_id=$this->request->query('stream_id'); 
+        $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
+        $fee_category_ids=$this->request->query('fee_category_id'); 
+        $daterange=$this->request->query('daterange'); 
+        $date_from=date('Y-m-d',strtotime($daterange[0]));
+        $date_to=date('Y-m-d',strtotime($daterange[1]));
         $dailyCollection=[];
         $session_year_id = $this->Auth->User('session_year_id');
         

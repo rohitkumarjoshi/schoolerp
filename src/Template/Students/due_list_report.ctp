@@ -1,5 +1,6 @@
 <?php echo $this->Html->css('mystyles'); ?>
 <?php
+pr($fee_category_ids);exit;
 use Cake\Controller\Component;
  
 /**
@@ -17,14 +18,11 @@ use Cake\Controller\Component;
         <div class="box box-primary">
             <div class="box-header with-border" >
                 <label >Due List</label>
-            </div>
-            <div class="actions">
-                    <div class="actions">
-                     <!-- <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportDueListReport'],['target'=>'_blank']); ?> -->
-                     <button onclick="exportTableToExcel('due')">Export Table Data To Excel File</button>
-
-
-
+                <div class="actions pull-right">
+                           <?php
+                           @$url_excel="/?".$url;
+                            echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/Students/exportDueListReport/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+                </div>
             </div>
             <div class="box-body">
                 <?= $this->Form->create('form1',['class'=>'FormSubmit','id'=>'ServiceForm']) ?>

@@ -23,7 +23,7 @@
                                         $total_amount=$amount=$concession_amount=$fine_amount=0;
                                    
                                         ?>
-?>
+
 <table border="1">
       <thead>
                                                     <tr>
