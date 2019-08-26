@@ -16,7 +16,7 @@
                         <div class="col-md-3">
                             <label class="control-label"> Date <span class="required" aria-required="true"> * </span></label>
                                     <?php echo $this->Form->control('date',[
-                                    'label' => false,'class'=>'form-control datepicker','placeholder'=>'Date','type'=>'text','data-date-format'=>'dd-mm-yyyy','required','value'=>date('d-m-Y')]);?>
+                                    'label' => false,'class'=>'form-control datepicker','placeholder'=>'Date','type'=>'text','data-date-format'=>'dd-mm-yyyy','required']);?>
                         </div>
                         <div  class="col-md-3" style="margin-top: 24px!important;">
                             <center>
@@ -26,6 +26,7 @@
                         
                     </div>
                 </div>
+                <?= $this->Form->end() ?>
                     <div class="pull-right box-tools">
                         <?= $this->Html->link('Print','javascript:window.print();',['escape'=>false,'class'=>'btn bg-maroon hide_print','style'=>'color:#fff !important;']) ?>
                     </div>

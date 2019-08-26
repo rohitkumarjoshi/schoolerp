@@ -38,10 +38,10 @@ class AttendancesController extends AppController
     public function summaryAttendance()
     {
         //pr($daterange);exit;
-        if(!empty($this->request->query('date')))
+        if ($this->request->is(['post','put'])) 
         {
-         $date=$this->request->query('date');
-         pr($date);exit;
+         $date=$this->request->getData('date');
+         //pr($date);exit;
         }
         else
         {
