@@ -53,8 +53,8 @@ Router::scope('/', function (RouteBuilder $routes) {
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
     $routes->connect('/', ['controller' => 'Users', 'action' => 'login']);
-    $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware());
-    $routes->applyMiddleware('csrf');
+    //$routes->registerMiddleware('csrf', new CsrfProtectionMiddleware());
+    //$routes->applyMiddleware('csrf');
 
         // Connect routes that need CSRF protection.
     

@@ -49,7 +49,6 @@ class AppController extends Controller
         $this->loadComponent('Security');
         $this->loadComponent('FeeReceipt');
         $this->loadComponent('Numbers');
-        $this->getEventManager()->off($this->Csrf);
         $awsFileLoad=$this->loadComponent('AwsFile');
         $Find = $this->loadComponent('Find');
         $Grade = $this->loadComponent('Grade');

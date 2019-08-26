@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <label class="control-label"> Date <span class="required" aria-required="true"> * </span></label>
-                                    <?php echo $this->Form->control('date[]',[
+                                    <?php echo $this->Form->control('date',[
                                     'label' => false,'class'=>'form-control datepicker','placeholder'=>'Date','type'=>'text','data-date-format'=>'dd-mm-yyyy','required','value'=>date('d-m-Y')]);?>
                         </div>
                         <div  class="col-md-3" style="margin-top: 24px!important;">

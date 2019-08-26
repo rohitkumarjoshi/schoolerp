@@ -17,13 +17,14 @@ class AttendancesController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->loadComponent('Csrf');
+        //$this->loadComponent('Csrf');
     }
      public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
         
-        $this->Security->setConfig('unlockedActions', ['add','edit']);
+      //  $this->getEventManager()->off($this->Csrf);
+        $this->Security->setConfig('unlockedActions', ['add','summaryAttendance']);
          
         
 
@@ -63,7 +64,7 @@ class AttendancesController extends AppController
                 );
         $morning_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.first_half' => 0.0,'Attendances.first_half'=>1]),
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0.0,'OR'=>['Attendances.first_half'=>1]]),
                     1,
                     'integer'
                 );
@@ -76,7 +77,7 @@ class AttendancesController extends AppController
                 );
         $evening_a = $attendances->newExpr()
                 ->addCase(
-                    $attendances->newExpr()->add(['Attendances.second_half' => 0.0,'Attendances.second_half'=>1]),
+                    $attendances->newExpr()->add(['Attendances.second_half' => 0.0,'OR'=>['Attendances.first_half'=>1]]),
                     1,
                     'integer'
                 );
