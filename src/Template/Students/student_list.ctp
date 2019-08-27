@@ -51,25 +51,33 @@
                         
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                                 <label class="control-label"> Medium</label>
                                 <?php echo $this->Form->control('medium_id',[
                                 'label' => false,'class'=>'form-control','empty'=>'---Select Medium---','options'=>$mediums,'id'=>'medium_id']);?>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="control-label"> Class</label>
                             <?php echo $this->Form->control('student_class_id',[
                             'label' => false,'class'=>'form-control','empty'=>'---Select Class---','id'=>'student_class_id']);?>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="control-label"> Stream</label>
                             <?php echo $this->Form->control('stream_id',[
                             'label' => false,'class'=>'form-control','empty'=>'---Select Stream---','id'=>'stream_id']);?>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="control-label"> Section</label>
                             <?php echo $this->Form->control('section_id',[
                             'label' => false,'class'=>'form-control','empty'=>'---Select Section---','options'=>$sections,'id'=>'section_id']);?>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="control-label"> Gender</label>
+                            <?php 
+                            $gender_list=[];
+                             $gender_list=[['text'=>'Male','value'=>'1'],['text'=>'Female','value'=>'2']];
+                            echo $this->Form->control('gender',[
+                            'label' => false,'class'=>'form-control','empty'=>'---Select Gender---','options'=>$gender_list,'id'=>'section_id']);?>
                         </div>
                     </div>
                     <div  class="row">

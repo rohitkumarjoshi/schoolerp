@@ -14,6 +14,14 @@
 											<label class="control-label">Search By Student</label>
 											<?= $this->Form->control('student_id', ['options' => $students,'label' => false, 'class'=>'select2','style'=>'width:100%','empty'=>'Select All Student','dataplaceholder'=>'Select Student'])?>
 										</div>
+										<div class="col-md-3">
+				                            <label class="control-label"> Gender</label>
+				                            <?php 
+				                            $gender_list=[];
+				                            $gender_list=[['text'=>'Male','value'=>'1'],['text'=>'Female','value'=>'2']];
+				                            echo $this->Form->control('gender',[
+				                            'label' => false,'class'=>'form-control','empty'=>'---Select Gender---','options'=>$gender_list,'id'=>'section_id']);?>
+				                        </div>
 										  <div class="col-md-1">
 			                                    <label class="control-label"  style=" visibility: hidden;">Search</label>
 			                                     <?php echo $this->Form->button('Search',['class'=>'btn btn-md btn-success filter','id'=>'submit_member','name'=>'search_report','value'=>'yes','style'=>'margin-right: 0px;color:white !important;height:38px;']); ?> 

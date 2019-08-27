@@ -222,6 +222,8 @@ class StudentsTable extends Table
         
         $this->belongsTo('Documents');
         $this->belongsTo('Schools');
+        $this->belongsTo('Leaves');
+        $this->belongsTo('Feedbacks');
       
         $this->hasMany('DocumentClassMappings', [
             'className' => 'DocumentClassMappings',

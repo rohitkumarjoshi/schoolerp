@@ -155,6 +155,9 @@ class SessionYearsTable extends Table
         $this->hasMany('Employees', [
             'foreignKey' => 'session_year_id'
         ]);
+        $this->hasMany('AcademicCalenders', [
+            'foreignKey' => 'session_year_id'
+        ]);
     }
 
     /**

@@ -221,7 +221,44 @@ class StudentsController extends AppController
         $dailyAmounts->select(['daily_amount'=>$dailyAmounts->func()->sum('total_amount')]);
         //pr($dailyAmount->toArray()); exit;
         $total_admission=$this->Students->EnquiryForms->find()->where(['admission_generated'=>'Y'])->count();
-        $this->set(compact('total_enquiry','total_admission','total_admission_form','dailyAmounts'));
+        $attendances=$this->Students->StudentInfos->Attendances->find()
+        ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+        ->where(['Attendances.attendance_date'=>$date,'Attendances.is_deleted'=>'N'])
+        ->autoFields(true);
+
+        $present_std = $attendances->newExpr()
+                ->addCase(
+                    $attendances->newExpr()->add(['Attendances.first_half' => 0.5]),
+                    1,
+                    'integer'
+                );
+        $total_std = $attendances->newExpr()
+        ->addCase(
+            $attendances->newExpr()->add(['StudentInfos.student_id']),
+            1,
+            'integer'
+        );
+            $attendances->select([
+                'present_std' => $attendances->func()->count($present_std),
+                'total_std' => $attendances->func()->count($total_std)
+            ]);
+        //pr($attendances->toArray());exit;
+        $leaves=$this->Students->Leaves->find()
+        ->select(['pending_leave'=>'count(Leaves.id)'])
+        ->where(['Leaves.is_deleted'=>'N','Leaves.employee_id IS NOT NULL','Leaves.status'=>'Pending']);
+        //pr($leaves->toArray());exit;
+
+        $feedbacks=$this->Students->Feedbacks->find()->where(['Feedbacks.is_deleted'=>'N'])->order(['Feedbacks.id'=>'DESC']);
+
+        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date >='=>date('Y-m-d')]);
+
+         $alok_kids=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>5,'AcademicCalenders.date >='=>date('Y-m-d')]);
+        //pr($holidays->toArray());exit;
+
+        $events=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>3,'AcademicCalenders.date >='=>date('Y-m-d')]);
+
+
+        $this->set(compact('total_enquiry','total_admission','total_admission_form','dailyAmounts','attendances','leaves','feedbacks','holidays','events','alok_kids'));
     }
     public function getStudent()
     {

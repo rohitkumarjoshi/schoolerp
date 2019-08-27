@@ -218,9 +218,14 @@ class HostelRegistrationsController extends AppController
         if ($this->request->is('post')) 
             {
                 $student_id=$this->request->getData('student_id');
+                $gender=$this->request->getData('gender');
                 if(!empty($student_id))
                  {
                     $conditions['HostelRegistrations.student_id']=$student_id; 
+                 }
+                 if(!empty($gender))
+                 {
+                    $conditions['Students.gender_id']=$gender; 
                  }
                  $conditions['HostelRegistrations.is_deleted']='N';
                 $HostelRegistrations = $this->paginate($this->HostelRegistrations->find()->where($conditions));
