@@ -106,7 +106,10 @@
                          <?php $i=1;foreach ($events as $event) {
                             if($i < 6){?>
                         <tr>
-                            <td><?= $event->description?></td>
+                            <td><?php $eve=$event->description;
+                             echo mb_strimwidth($eve, 0, 30, "...");
+
+                            ?></td>
                             <td><?= $event->date?></td>
                         </tr>
                        <?php }
@@ -143,7 +146,10 @@
                          <?php $i=1;foreach ($alok_kids as $alok_kid) {
                             if($i < 6){?>
                         <tr>
-                            <td><?= $alok_kid->description?></td>
+                            <td><?php $alok=$alok_kid->description;
+                                    echo mb_strimwidth($alok, 0, 30, "...");
+
+                            ?></td>
                             <td><?= $alok_kid->date ?></td>
                         </tr>
                        <?php }
@@ -181,8 +187,8 @@
                          <?php $i=1;foreach ($holidays as $holiday) {
                             if($i < 6){?>
                         <tr>
-                            <td><?php $hol_desc=$holiday->description;
-                                    echo wordwrap($hol_desc,15,"<br>\n");
+                            <td><?php $holi=$holiday->description;
+                            echo mb_strimwidth($holi, 0, 30, "...");
                                 ?></td>
                             <td><?= $holiday->date?></td>
                         </tr>
@@ -210,7 +216,7 @@
             <div class="icon">
                 <i class="ion-ios-bookmarks"></i>
             </div>
-            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'EnquiryFormStudents','action'=>'enquiryReport'],['class'=>'small-box-footer','escape'=>false]) ?>
+            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Attendances','action'=>'summaryAttendance'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
         </div>
     </div>
      <div class="col-lg-3 col-xs-6">
@@ -224,7 +230,7 @@
             <div class="icon">
                 <i class="ion-android-plane"></i>
             </div>
-            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'EnquiryFormStudents','action'=>'enquiryReport'],['class'=>'small-box-footer','escape'=>false]) ?>
+            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Leaves','action'=>'index'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
         </div>
     </div>
 </div>
