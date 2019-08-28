@@ -187,7 +187,7 @@ class TimeTablePeriodsController extends AppController
             $x=0;
             $i=0;
 
-           //pr($this->request->getData()); die();
+           //pr($this->request->getData());
             foreach ($subject_id as $singleSub) {
 
                 $timeTablePeriod = $this->TimeTablePeriods->newEntity();
@@ -200,11 +200,13 @@ class TimeTablePeriodsController extends AppController
                 $timeTablePeriod->time_to = $time_to[$x]; 
                 $timeTablePeriod->employee_id = $employee_id[$x]; 
                 $timeTablePeriod->created_by = $user_id; 
-                $days = $day.$x; 
+                $days = $this->request->getData('day'.$x); 
+              
                 foreach ($days as $day) {
                     $timeTablePeriod->day=$day;
 
                 //pr($timeTablePeriod); die();
+                    //pr($timeTablePeriod);exit;
                 $this->TimeTablePeriods->save($timeTablePeriod);
                 }
                 
