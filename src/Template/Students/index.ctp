@@ -230,7 +230,7 @@
             <div class="icon">
                 <i class="ion-android-plane"></i>
             </div>
-            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Leaves','action'=>'index'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
+            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Leaves','action'=>'leaveApproval'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
         </div>
     </div>
 </div>
