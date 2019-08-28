@@ -34,7 +34,7 @@ class AttendancesController extends AppController
                     $field_name='first_half';
                 }
 
-                $attendanceCount = $this->Attendances->find()->where(['attendance_date'=>$attendance_date,'student_info_id'=>$student_id])->count();
+                 $attendanceCount = $this->Attendances->find()->where(['attendance_date'=>$attendance_date,'student_info_id'=>$student_id])->count();
 
                 if($attendanceCount>0){
                     $attedata = $this->Attendances->find()->where(['attendance_date'=>$attendance_date,'student_info_id'=>$student_id])->first();
@@ -51,13 +51,77 @@ class AttendancesController extends AppController
                 $attendance->attendance_date=$attendance_date;
                 $attendance->student_info_id = $student_id; 
                 $attendance->session_year_id = $currentSession; 
+				$check="";
                 if($optradio=='first_half'){
                     $attendance->first_half = $attendanceData[$key];
+					if($attendanceData[$key]=="0.5"){
+						$check="Present";
+					}else{
+						
+						$check="Absent";
+					}
                 }
                 else{
                     $attendance->second_half = $attendanceData[$key];
+					if($attendanceData[$key]=="0.5"){
+						$check="Present";
+					}else{
+						
+						$check="Absent";
+					}
                 } 
 				
+		    /// notification code start
+				$this->loadmodel('StudentInfos');
+				$StudentInfos=$this->StudentInfos->get($student_id,['contain'=>['Users','Students']]);
+				$name=$StudentInfos->student->name; 
+				$device_token=$StudentInfos->user->device_token;
+				$title="Attendance";
+				$message="Your ward is ".$check."";
+				if(!empty($device_token)){
+							
+								$tokens = array($device_token);
+
+								$header = [
+								'Content-Type:application/json',
+								'Authorization: Key=AAAABVEB0FY:APA91bGo3Y-hslS9_ztp95KFdzgfkf_IR-KR1K9WJlPo5wGYtWFunp_LK3zy8Dom3DJo2UV9IXBbcO_hDeLFRf6hUHt-QelMevoA0O4b_DC3VpH_POvBM2NG0_z20Iztzp7lE1FtTV8e'
+								];
+
+								$msg = [
+								'title'=> $title,
+								'message' => $message,
+								
+								'link' =>''
+								];
+
+								$payload = array(
+								'registration_ids' => $tokens,
+								'data' => $msg
+								);
+
+								$curl = curl_init();
+								curl_setopt_array($curl, array(
+								CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
+								CURLOPT_RETURNTRANSFER => true,
+								CURLOPT_CUSTOMREQUEST => "POST",
+								CURLOPT_POSTFIELDS => json_encode($payload),
+								CURLOPT_HTTPHEADER => $header
+								));
+								$response = curl_exec($curl);
+								$err = curl_error($curl);
+								curl_close($curl);
+								
+								$final_result=json_decode($response);
+								$sms_flag=$final_result->success;     
+								if ($err) {
+									echo "cURL Error #:" . $err;
+								} else {
+									echo $response;
+								}            
+									
+						} 
+				
+				//End
 				$attendance->class_mapping_id = $class_section_id;
 				//pr($attendance); 
                 $this->Attendances->save($attendance);
