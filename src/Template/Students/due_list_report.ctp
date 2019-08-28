@@ -1,5 +1,6 @@
 <?php echo $this->Html->css('mystyles'); ?>
 <?php
+//pr(@$fee_category_ids);exit;
 use Cake\Controller\Component;
  
 /**

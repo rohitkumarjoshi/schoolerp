@@ -524,7 +524,7 @@ class FeeCategoriesController extends AppController
             
             $date_from=date('Y-m-d',strtotime($daterange[0]));
             $date_to=date('Y-m-d',strtotime($daterange[1]));
-            if($fee_type_role_ids!="-")
+            if(!empty($fee_type_role_ids))
             {
                 $getFeeTypeRoles = $this->FeeCategories->FeeTypes->find()
                             ->select(['fee_category_id'])

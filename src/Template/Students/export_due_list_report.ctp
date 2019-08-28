@@ -37,7 +37,7 @@
                                             <th style="text-align: center;">Scholar No.</th>
                                             <th>Name</th> 
                                             <?php
-                                            if(in_array(1,$fee_category_ids))
+                                            if(in_array(1,@$fee_category_ids))
                                             {
                                                 ?>
                                                 <th style="text-align: center;">Months for which the Fee is Due</th> 

@@ -41,18 +41,18 @@
                                             <thead>
                                             <tr>
                                                 <th rowspan="2">Sr. No.</th>
-                                                <th rowspan="2">Medium</th>
+                                                <th rowspan="2">Teacher</th>
                                                 <th rowspan="2">Class</th>
                                                 <th rowspan="2">Sections</th>
                                                 <th rowspan="2">Total</th>
-                                                <th colspan="2">Morning</th>
-                                                <th colspan="2">Evening</th>
+                                                <th colspan="2" style="text-align: center;">Morning</th>
+                                                <th colspan="2" style="text-align: center;">Evening</th>
                                             </tr>
                                             <tr>
-                                                <th>P</th>
-                                                <th>A</th>
-                                                <th>P</th>
-                                                <th>A</th>
+                                                <th>Present</th>
+                                                <th>Absent</th>
+                                                <th>Present</th>
+                                                <th>Absent</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -63,7 +63,7 @@
                                                    
 
                                                         <td><?= $i;$i++; ?></td>
-                                                        <td><?= @$attendance->student_info->medium->name ?></td>
+                                                        <td><?= @$attendance->student_info->class_mapping->employee->name ?></td>
                                                         <td><?= @$attendance->student_info->student_class->name ?></td>
                                                         <td><?= @$attendance->student_info->section->name ?></td>
                                                         <td><?= @$attendance->total_student ?></td>

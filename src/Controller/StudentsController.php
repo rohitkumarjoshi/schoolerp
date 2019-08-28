@@ -1630,15 +1630,15 @@ class StudentsController extends AppController
                     $studentClasses->where(['StudentClasses.id'=>$student_class_id]);
                 }
                 $studentClasses->contain(['StudentInfos'=>function($q)use($medium_id,$stream_id,$section_id){
-                        if($medium_id)
+                        if(!empty($medium_id))
                         {
                             $q->where(['StudentInfos.medium_id'=>$medium_id]);
                         }
-                        if($stream_id)
+                        if(!empty($stream_id))
                         {
                             $q->where(['StudentInfos.stream_id'=>$stream_id]);
                         }  
-                        if($section_id)
+                        if(!empty($section_id))
                         {
                             $q->where(['StudentInfos.section_id'=>$section_id]);
                         } 
@@ -2079,10 +2079,10 @@ class StudentsController extends AppController
             $url=parse_url($url,PHP_URL_QUERY);
             
             
-                $fee_type_role_ids=1;//$this->request->query('fee_type_role_id'); 
+                $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
                 //pr($fee_type_role_ids);exit;
-                $fee_category_ids=1;//$this->request->query('fee_category_id'); 
-                $daterange=1;//$this->request->query('daterange'); 
+                $fee_category_ids=$this->request->query('fee_category_id'); 
+                $daterange=$this->request->query('daterange'); 
                 $date_from=date('Y-m-d',strtotime($daterange[0]));
                 $date_to=date('Y-m-d',strtotime($daterange[1]));
         
