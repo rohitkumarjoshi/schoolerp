@@ -52,7 +52,8 @@
                                             <?php $types['Thursday']='Thursday';?>
                                             <?php $types['Friday']='Friday';?>
                                             <?php $types['Saturday']='Saturday';?>
-                                            <?php echo  $this->Form->control('day[]', ['options' => $types,'class'=>"select2 day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true,'style'=>'width:100%']);?>
+                                            <?php $i=0;echo  $this->Form->control('day'.$i, ['options' => $types,'class'=>"select2 day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true,'style'=>'width:100%']);$i++;?>
+
                                         </td>
                                         <td>
                                             <div class="bootstrap-timepicker"> 
@@ -104,7 +105,7 @@
     
         <tr class="hello">
             
-        <td><?php echo $this->Form->control('facultiy[]', ['empty'=>'--- Select ---','options' => $option,'class'=>'form-control classMapping','style'=>'width:100%','label'=>false,'required']);?>
+        <td><?php echo $this->Form->control('facultiy[]', ['empty'=>'--- Select ---','options' => $option,'class'=>'form-control classMapping','style'=>'width:100%','label'=>false]);?>
         </td>
         <td>
            <?php echo $this->Form->hidden('medium_id[]', ['label'=>false,'class'=>'medium_id']);?>
@@ -118,7 +119,7 @@
             <?php $types['Thursday']='Thursday';?>
             <?php $types['Friday']='Friday';?>
             <?php $types['Saturday']='Saturday';?>
-            <?php echo  $this->Form->control('day[]', ['options' => $types,'class'=>"day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true]);?>
+            <?php echo  $this->Form->control('day'.$i, ['options' => $types,'class'=>"day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true,'required']);$i++;?>
         </td>
         <td>
             <div class="bootstrap-timepicker" > 

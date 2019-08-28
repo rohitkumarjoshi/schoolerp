@@ -2079,10 +2079,10 @@ class StudentsController extends AppController
             $url=parse_url($url,PHP_URL_QUERY);
             
             
-                $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
-                pr($fee_type_role_ids);exit;
-                $fee_category_ids=$this->request->query('fee_category_id'); 
-                $daterange=$this->request->query('daterange'); 
+                $fee_type_role_ids=1;//$this->request->query('fee_type_role_id'); 
+                //pr($fee_type_role_ids);exit;
+                $fee_category_ids=1;//$this->request->query('fee_category_id'); 
+                $daterange=1;//$this->request->query('daterange'); 
                 $date_from=date('Y-m-d',strtotime($daterange[0]));
                 $date_to=date('Y-m-d',strtotime($daterange[1]));
         

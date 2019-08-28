@@ -187,28 +187,27 @@ class TimeTablePeriodsController extends AppController
             $x=0;
             $i=0;
 
-          //  pr($this->request->getData()); die();
+           //pr($this->request->getData()); die();
             foreach ($subject_id as $singleSub) {
+
                 $timeTablePeriod = $this->TimeTablePeriods->newEntity();
                 $timeTablePeriod->medium_id = $medium_id[$x]; 
                 $timeTablePeriod->student_class_id = $student_class_id[$x]; 
                 $timeTablePeriod->stream_id = $stream_id[$x]; 
                 $timeTablePeriod->section_id = $section_id[$x]; 
                 $timeTablePeriod->subject_id = $singleSub; 
-                foreach ($day as $days) 
-                {
-                    $timeTablePeriod[$i]['days'] = $days[$x]; 
-                    $timeTablePeriod->day=$timeTablePeriod[$i]['days'];
-                    $i++;
-                }
-                //$timeTablePeriod->day = $day[$x]; 
                 $timeTablePeriod->time_from = $time_from[$x]; 
                 $timeTablePeriod->time_to = $time_to[$x]; 
                 $timeTablePeriod->employee_id = $employee_id[$x]; 
                 $timeTablePeriod->created_by = $user_id; 
+                $days = $day.$x; 
+                foreach ($days as $day) {
+                    $timeTablePeriod->day=$day;
 
                 //pr($timeTablePeriod); die();
                 $this->TimeTablePeriods->save($timeTablePeriod);
+                }
+                
             $x++;
             }
             return $this->redirect(['action' => 'index']); 
