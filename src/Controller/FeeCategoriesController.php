@@ -506,14 +506,12 @@ class FeeCategoriesController extends AppController
     public function exportConcessionListReport()
     {
         $this->viewBuilder()->layout('');
-        $url=$this->request->here();
-        $url=parse_url($url,PHP_URL_QUERY);
     
     
         $medium_id=$this->request->query('medium_id'); 
         $student_class_id=$this->request->query('student_class_id'); 
         $stream_id=$this->request->query('stream_id'); 
-        $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
+        @$fee_type_role_ids=$this->request->query('fee_type_role_id'); 
         $fee_category_ids=$this->request->query('fee_category_id'); 
         $daterange=$this->request->query('daterange'); 
         $date_from=date('Y-m-d',strtotime($daterange[0]));
@@ -533,8 +531,8 @@ class FeeCategoriesController extends AppController
                 $fee_category_ids[]=$getFeeTypeRoles->fee_category_id;
             }
             
-            $getFeeCategories = $this->FeeCategories->find()->where(['id IN'=>$fee_category_ids]);
-            $getFeeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>['FeeTypeRoles']]);
+            @$getFeeCategories = $this->FeeCategories->find()->where(['id IN'=>$fee_category_ids]);
+            @$getFeeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>['FeeTypeRoles']]);
 
             foreach ($getFeeCategories as $feeCategory) {
                 $fee_category_id=$feeCategory->id;
