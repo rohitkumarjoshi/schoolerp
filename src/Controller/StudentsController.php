@@ -224,7 +224,7 @@ class StudentsController extends AppController
         $attendances=$this->Students->StudentInfos->Attendances->find()
         ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
         ->where(['Attendances.attendance_date'=>$date,'Attendances.is_deleted'=>'N'])
-        ->autoFields(true);
+        ->enableAutoFields(true);
 
         $present_std = $attendances->newExpr()
                 ->addCase(
@@ -1625,7 +1625,7 @@ class StudentsController extends AppController
             $categoryData = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find()->where(['FeeCategories.id IN'=>$fee_category_ids]);
 
             $studentClasses = $this->Students->StudentInfos->StudentClasses->find();
-                if($student_class_id)
+                if(!empty($student_class_id))
                 {
                     $studentClasses->where(['StudentClasses.id'=>$student_class_id]);
                 }

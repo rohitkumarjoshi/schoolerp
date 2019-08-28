@@ -15,7 +15,10 @@
 
 ?>
 
-			    <?php
+			   <?php
+                if(@sizeof(@$studentClasses) > 0 ){ ?>
+               
+                            <?php
                          // pr($section_data[$section_id]); exit;
                             $totalAmounts=0;
                             $grand_amount=[];
@@ -37,7 +40,7 @@
                                             <th style="text-align: center;">Scholar No.</th>
                                             <th>Name</th> 
                                             <?php
-                                            if(in_array(1,@$fee_category_ids))
+                                            if(in_array(1,$fee_category_ids))
                                             {
                                                 ?>
                                                 <th style="text-align: center;">Months for which the Fee is Due</th> 
@@ -257,4 +260,6 @@
                                     ?>
                                     <th style="text-align: center;"><?= $this->Number->format($grand_total) ?></th> 
                                 </tr>
-                            </table>
+                            </table>                            
+                        </div>
+                        <?php } ?>
