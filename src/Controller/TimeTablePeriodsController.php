@@ -194,6 +194,12 @@ class TimeTablePeriodsController extends AppController
                 $timeTablePeriod->stream_id = $stream_id[$x]; 
                 $timeTablePeriod->section_id = $section_id[$x]; 
                 $timeTablePeriod->subject_id = $singleSub; 
+                foreach ($day as $days) 
+                {
+                    $timeTablePeriod[$i]['days'] = $days; 
+                    $timeTablePeriod->day=$timeTablePeriod[$x]['days'];
+                    $x++;
+                }
                 $timeTablePeriod->day = $day[$x]; 
                 $timeTablePeriod->time_from = $time_from[$x]; 
                 $timeTablePeriod->time_to = $time_to[$x]; 

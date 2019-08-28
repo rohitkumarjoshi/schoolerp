@@ -118,7 +118,7 @@
             <?php $types['Thursday']='Thursday';?>
             <?php $types['Friday']='Friday';?>
             <?php $types['Saturday']='Saturday';?>
-            <?php echo  $this->Form->control('day[]', ['options' => $types,'class'=>"day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true,'style'=>'width:100%']);?>
+            <?php echo  $this->Form->control('day[]', ['options' => $types,'class'=>"day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true]);?>
         </td>
         <td>
             <div class="bootstrap-timepicker" > 
