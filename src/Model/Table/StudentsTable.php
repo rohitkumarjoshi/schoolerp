@@ -264,7 +264,7 @@ class StudentsTable extends Table
             'foreignKey' => 'student_id'
         ]);
 		
-		 $this->belongsTo('Leaves');
+	
     }
 
     /**
