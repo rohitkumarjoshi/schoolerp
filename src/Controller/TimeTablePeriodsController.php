@@ -190,6 +190,9 @@ class TimeTablePeriodsController extends AppController
            //pr($this->request->getData());
             foreach ($subject_id as $singleSub) {
 
+               
+              
+                foreach ($days as $day) {
                 $timeTablePeriod = $this->TimeTablePeriods->newEntity();
                 $timeTablePeriod->medium_id = $medium_id[$x]; 
                 $timeTablePeriod->student_class_id = $student_class_id[$x]; 
@@ -201,8 +204,7 @@ class TimeTablePeriodsController extends AppController
                 $timeTablePeriod->employee_id = $employee_id[$x]; 
                 $timeTablePeriod->created_by = $user_id; 
                 $days = $this->request->getData('day'.$x); 
-              
-                foreach ($days as $day) {
+                    //echo $day;
                     $timeTablePeriod->day=$day;
 
                 //pr($timeTablePeriod); die();
