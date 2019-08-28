@@ -44,16 +44,15 @@
                                                 <th rowspan="2">Medium</th>
                                                 <th rowspan="2">Class</th>
                                                 <th rowspan="2">Sections</th>
+                                                <th rowspan="2">Total</th>
                                                 <th colspan="2">Morning</th>
                                                 <th colspan="2">Evening</th>
-                                                <th colspan="2">Total</th>
                                             </tr>
                                             <tr>
                                                 <th>P</th>
                                                 <th>A</th>
                                                 <th>P</th>
                                                 <th>A</th>
-                                                <th></th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -67,11 +66,11 @@
                                                         <td><?= @$attendance->student_info->medium->name ?></td>
                                                         <td><?= @$attendance->student_info->student_class->name ?></td>
                                                         <td><?= @$attendance->student_info->section->name ?></td>
+                                                        <td><?= @$attendance->total_student ?></td>
                                                         <td><?= @$attendance->morning_p ?></td>
                                                         <td><?= @$attendance->morning_a + $attendance->morning_a_1?></td>
                                                         <td><?= @$attendance->evening_p ?></td>
                                                         <td><?= @$attendance->evening_a + $attendance->evening_a_1 ?></td>
-                                                        <td><?= @$attendance->total_student ?></td>
                                                          
                                                 </tr>
 

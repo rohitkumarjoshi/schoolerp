@@ -178,7 +178,7 @@ class TimeTablePeriodsController extends AppController
             $stream_id= $this->request->getData('stream_id');
             $section_id= $this->request->getData('section_id');
             $subject_id= $this->request->getData('subject_id');
-            $day= $this->request->getData('day');
+            //$day= $this->request->getData('day');
             //pr($day);exit;
             $time_from= $this->request->getData('time_from');
             $time_to= $this->request->getData('time_to');
@@ -192,6 +192,7 @@ class TimeTablePeriodsController extends AppController
 
                
               
+                $days = $this->request->getData('day'.$x); 
                 foreach ($days as $day) {
                 $timeTablePeriod = $this->TimeTablePeriods->newEntity();
                 $timeTablePeriod->medium_id = $medium_id[$x]; 
@@ -203,7 +204,6 @@ class TimeTablePeriodsController extends AppController
                 $timeTablePeriod->time_to = $time_to[$x]; 
                 $timeTablePeriod->employee_id = $employee_id[$x]; 
                 $timeTablePeriod->created_by = $user_id; 
-                $days = $this->request->getData('day'.$x); 
                     //echo $day;
                     $timeTablePeriod->day=$day;
 
