@@ -179,6 +179,7 @@ class TimeTablePeriodsController extends AppController
             $section_id= $this->request->getData('section_id');
             $subject_id= $this->request->getData('subject_id');
             $day= $this->request->getData('day');
+            //pr($day);exit;
             $time_from= $this->request->getData('time_from');
             $time_to= $this->request->getData('time_to');
             $employee_id= $this->request->getData('employee_id');

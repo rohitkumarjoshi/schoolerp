@@ -9,7 +9,9 @@
 			<div class="box-header with-border" >
 				<label >Non Scholars Register </label>
                 <div class="action pull-right">
-                    <?php echo $this->Html->link('Excel',['controller'=>'FeeCategories','action' => 'exportNonScholarRegister'],['target'=>'_blank']); ?>
+                     <?php
+                   @$url_excel="/?".$url;
+                    echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/FeeCategories/exportNonScholarRegister/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
                 </div>
 			</div>
 			<div class="box-body">

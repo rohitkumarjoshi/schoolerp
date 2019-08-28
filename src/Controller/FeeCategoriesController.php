@@ -326,12 +326,23 @@ class FeeCategoriesController extends AppController
     }
     public function exportNonScholarRegister()
     {
-         $this->viewBuilder()->layout('');
+        $this->viewBuilder()->layout('');
+        $url=$this->request->here();
+        $url=parse_url($url,PHP_URL_QUERY);
         $dailyCollection=[];
         $session_year_id = $this->Auth->User('session_year_id');
        
+                if(!empty($this->request->query('daterange')))
+            {
+                $daterange=explode('/',$this->request->getData('daterange'));
+                $date_from=date('Y-m-d',strtotime($daterange[0]));
+                $date_to=date('Y-m-d',strtotime($daterange[1]));
+            }
+            else
+            {
                 $date_from=date('Y-m-d');
                 $date_to=date('Y-m-d');
+            }
            
             $feeReceipts=$this->FeeCategories->FeeReceipts->find();
                 $feeReceipts->where(['FeeReceipts.is_deleted'=>'N','FeeReceipts.session_year_id'=>$session_year_id]);
@@ -345,6 +356,8 @@ class FeeCategoriesController extends AppController
     public function nonScholarRegister()
     {
         $dailyCollection=[];
+        $url=$this->request->here();
+        $url=parse_url($url,PHP_URL_QUERY);
         $session_year_id = $this->Auth->User('session_year_id');
         if ($this->request->is(['post','put','get'])) 
         {
@@ -365,7 +378,7 @@ class FeeCategoriesController extends AppController
                 $feeReceipts->where(['FeeReceipts.enquiry_form_student_id IS'=>NULL,'FeeReceipts.old_fee_id IS'=>NULL,'FeeReceipts.student_info_id IS'=>NULL]);
                 $feeReceipts->contain(['FeeReceiptRows'=>['FeeTypeMasterRows'=>['FeeTypeMasters'=>'FeeTypes']]]);
                 $feeReceipts->order(['FeeReceipts.receipt_date'=>'ASC']);
-            $this->set(compact('feeReceipts','date_from','date_to'));
+            $this->set(compact('feeReceipts','date_from','date_to','url'));
         }
     }
     public function dailyCollection()

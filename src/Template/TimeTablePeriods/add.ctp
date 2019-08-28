@@ -46,14 +46,13 @@
             <?php echo $this->Form->hidden('section_id[]', ['label'=>false,'class'=>'section_id']);?>
             <?php echo $this->Form->hidden('subject_id[]', ['label'=>false,'class'=>'subject_id']);?>
                                         
-                                            <?php $type['Monday']='Monday';?>
-                                            <?php $type['Tuesday']='Tuesday';?>
-                                            <?php $type['Wednesday']='Wednesday';?>
-                                            <?php $type['Thursday']='Thursday';?>
-                                            <?php $type['Friday']='Friday';?>
-                                            <?php $type['Saturday']='Saturday';?>
-                                            <?php echo $this->Form->control('day[]',[
-                                            'label' => false,'class'=>'form-control day','empty'=>'Select...','options' => $type,'required'=>true]);?> 
+                                            <?php $types['Monday']='Monday';?>
+                                            <?php $types['Tuesday']='Tuesday';?>
+                                            <?php $types['Wednesday']='Wednesday';?>
+                                            <?php $types['Thursday']='Thursday';?>
+                                            <?php $types['Friday']='Friday';?>
+                                            <?php $types['Saturday']='Saturday';?>
+                                            <?php echo  $this->Form->control('day[]', ['options' => $types,'class'=>"select2 day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true,'style'=>'width:100%']);?>
                                         </td>
                                         <td>
                                             <div class="bootstrap-timepicker"> 
@@ -69,7 +68,7 @@
                                         </td>
                                         <td>
                                             <?php echo $this->Form->control('employee_id[]',[
-                                            'label' => false,'class'=>'form-control employee_id','empty'=>'Select...','options' => $employees,'required'=>true]);?> 
+                                            'label' => false,'class'=>'employee_id select2','empty'=>'Select...','options' => $employees,'required'=>true]);?> 
                                         </td>
                                         <td>
                                             <button type="button" onClick="add_row()" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>
@@ -113,14 +112,13 @@
             <?php echo $this->Form->hidden('stream_id[]', ['label'=>false,'class'=>'stream_id']);?>
             <?php echo $this->Form->hidden('section_id[]', ['label'=>false,'class'=>'section_id']);?>
             <?php echo $this->Form->hidden('subject_id[]', ['label'=>false,'class'=>'subject_id']);?>
-            <?php $type['Monday']='Monday';?>
-            <?php $type['Tuesday']='Tuesday';?>
-            <?php $type['Wednesday']='Wednesday';?>
-            <?php $type['Thursday']='Thursday';?>
-            <?php $type['Friday']='Friday';?>
-            <?php $type['Saturday']='Saturday';?>
-            <?php echo $this->Form->control('day[]',[
-            'label' => false,'class'=>'form-control day','empty'=>'Select...','options' => $type,'required'=>true]);?> 
+            <?php $types['Monday']='Monday';?>
+            <?php $types['Tuesday']='Tuesday';?>
+            <?php $types['Wednesday']='Wednesday';?>
+            <?php $types['Thursday']='Thursday';?>
+            <?php $types['Friday']='Friday';?>
+            <?php $types['Saturday']='Saturday';?>
+            <?php echo  $this->Form->control('day[]', ['options' => $types,'class'=>"day", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'required'=>'required','multiple'=>true,'style'=>'width:100%']);?>
         </td>
         <td>
             <div class="bootstrap-timepicker" > 
@@ -136,7 +134,7 @@
         </td>
         <td>
             <?php echo $this->Form->control('employee_id[]',[
-            'label' => false,'class'=>'form-control employee_id','empty'=>'Select...','options' => $employees,'required'=>true]);?> 
+            'label' => false,'class'=>'employee_id','empty'=>'Select...','options' => $employees,'required'=>true]);?> 
         </td>
         <td>
             <button type="button" onClick="add_row()" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>
@@ -461,6 +459,8 @@ $(document).ready(function() {
 function add_row(){  
     var new_line=$("#sample tbody").html();
     $("#parant_table tbody.parant_table").append(new_line);
+    $(".parant_table>tr:last").find(".day").select2();
+    $(".parant_table>tr:last").find(".employee_id").select2();
     $(".timepicker").timepicker({
       showInputs: false
     });

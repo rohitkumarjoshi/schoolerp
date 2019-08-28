@@ -2080,6 +2080,7 @@ class StudentsController extends AppController
             
             
                 $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
+                pr($fee_type_role_ids);exit;
                 $fee_category_ids=$this->request->query('fee_category_id'); 
                 $daterange=$this->request->query('daterange'); 
                 $date_from=date('Y-m-d',strtotime($daterange[0]));
@@ -2119,6 +2120,8 @@ class StudentsController extends AppController
 
     public function receiptDeleteDetail()
     {
+         $url=$this->request->here();
+            $url=parse_url($url,PHP_URL_QUERY);
         if ($this->request->is(['post','put'])) 
         {
             $fee_type_role_ids=$this->request->getData('fee_type_role_id');
@@ -2154,7 +2157,7 @@ class StudentsController extends AppController
         $feeTypeRoles = $this->Students->StudentInfos->FeeReceipts->FeeCategories->FeeTypes->FeeTypeRoles->find();
         $feeCategories = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find();
         $feeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
-        $this->set(compact('studentLedgers','feeTypeRoles','feeCategories'));
+        $this->set(compact('studentLedgers','feeTypeRoles','feeCategories','url'));
     }
 
     public function exportStudentListReport($list_type,$medium_id,$student_class_id,$stream_id,$section_id)
