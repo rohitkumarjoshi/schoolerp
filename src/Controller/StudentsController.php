@@ -248,9 +248,16 @@ class StudentsController extends AppController
         ->where(['Leaves.is_deleted'=>'N','Leaves.employee_id IS NOT NULL','Leaves.status'=>'Pending']);
         //pr($leaves->toArray());exit;
 
-        $feedbacks=$this->Students->Feedbacks->find()->where(['Feedbacks.is_deleted'=>'N'])->order(['Feedbacks.id'=>'DESC']);
+        $feedbacks=$this->Students->Feedbacks->find()
+        ->select(['total'=>'count(Feedbacks.id)'])
+        ->where(['Feedbacks.is_deleted'=>'N']);
+        //pr($feedbacks->toArray());exit; 
 
-        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date >='=>date('Y-m-d')]);
+        $notices=$this->Students->SessionYears->Notices->find()
+        ->select(['total'=>'count(Notices.id)'])
+        ->where(['Notices.valid_to >='=>date('Y-m-d')]);
+
+        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date <='=>date('Y-m-d')]);
 
          $alok_kids=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>5,'AcademicCalenders.date >='=>date('Y-m-d')]);
         //pr($holidays->toArray());exit;
@@ -258,7 +265,7 @@ class StudentsController extends AppController
         $events=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>3,'AcademicCalenders.date >='=>date('Y-m-d')]);
 
 
-        $this->set(compact('total_enquiry','total_admission','total_admission_form','dailyAmounts','attendances','leaves','feedbacks','holidays','events','alok_kids'));
+        $this->set(compact('total_enquiry','total_admission','total_admission_form','dailyAmounts','attendances','leaves','feedbacks','holidays','events','alok_kids','notices'));
     }
     public function getStudent()
     {

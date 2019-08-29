@@ -56,33 +56,7 @@
 </div>
 <div class="row">
    <div class="col-md-4">
-       <!--  <div class="box box-danger">
-            <div class="box-header with-border">
-              <h3 class="box-title">Latest Members</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="box-body no-padding">
-                <ul class="users-list clearfix">
-                    <?php $i=1;foreach ($events as $event) {
-                        if($i < 6){?>
-                            <li>
-                               <?= @$this->Html->image('/event.jpg'); ?>
-                              <a class="users-list-name" href="#"><?= $event->description?></a>
-                              <span class="users-list-date"><?= $event->date?></span>
-                            </li>
-                        <?php }
-                        $i++;
-                    } ?>
-                </ul>
-            </div>
-            <div class="box-footer text-center">
-              <a href="javascript:void(0)" class="uppercase">View All Users</a>
-            </div>
-        </div> -->
+       
         <div class="box box-info">
             <div class="box-header with-border">
               <h3 class="box-title"><?= $this->Html->link('Upcomig Events',['controller'=>'AcademicCalenders','action' => 'index', '?' => ['daterange' => '','CID'=>3]],['target'=>'_blank','escape'=>false]) ?></h3>
@@ -204,6 +178,8 @@
         </div>
     </div>
 </div>
+
+
 <div class="row">
     <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-green">
@@ -233,4 +209,72 @@
             <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Leaves','action'=>'leaveApproval'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
         </div>
     </div>
+    <div class="col-lg-3 col-xs-6">
+        <div class="small-box bg-red">
+            <div class="inner">
+                <h3 class="widgetText"><?php 
+                foreach ($feedbacks as $feedback) {
+                echo $this->Number->format(@$feedback->total); } ?></h3>
+                <p>Feedbacks</p>
+            </div>
+            <div class="icon">
+                <i class="icon ion-ios-people"></i>
+            </div>
+            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Feedbacks','action'=>'index'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
+        </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+        <div class="small-box bg-maroon">
+            <div class="inner">
+                <h3 class="widgetText"><?php 
+                foreach ($notices as $notice) {
+                echo $this->Number->format(@$notice->total); } ?></h3>
+                <p>Notice</p>
+            </div>
+            <div class="icon">
+                <i class="icon ion-ios-book"></i>     
+            </div>
+            <?= $this->Html->link('More info <i class="fa fa-arrow-circle-right"></i>',['controller'=>'Notices','action'=>'index'],['class'=>'small-box-footer','escape'=>false,'target'=>'_blank']) ?>
+        </div>
+    </div>
 </div>
+<!-- <div class="row">
+    <div class="col-sm-12">
+      <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">  <?= $this->Html->link('Recent Feedbacks',['controller'=>'Feedbacks','action' => 'index'],['target'=>'_blank','escape'=>false]) ?></h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="table-responsive">
+                <table class="table no-margin">
+                    <thead>
+                      <tr>
+                        <th>Feedback</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                         <?php $i=1;foreach ($feedbacks as $feedback) {
+                            if($i < 6){?>
+                        <tr>
+                            <td><?php $feed=$feedback->description;
+                                    echo mb_strimwidth($feed, 0, 160, "...");
+
+                            ?></td>
+                            <td><?= date('Y-m-d',strtotime($feedback->created_on))?></td>
+                        </tr>
+                       <?php }
+                            $i++;
+                        } ?>
+                    </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+    </div>
+</div> -->
