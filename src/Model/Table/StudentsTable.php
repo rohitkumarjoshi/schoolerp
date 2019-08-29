@@ -263,6 +263,8 @@ class StudentsTable extends Table
         $this->hasMany('StudentMotherProfessions', [
             'foreignKey' => 'student_id'
         ]);
+		
+	
     }
 
     /**
