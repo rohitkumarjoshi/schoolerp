@@ -63,7 +63,7 @@
                                                    
 
                                                         <td><?= $i;$i++; ?></td>
-                                                        <td><?= @$attendance->student_info->class_mapping->employee->name ?></td>
+                                                        <td><?= @$attendance->class_mapping->employee->name ?></td>
                                                         <td><?= @$attendance->student_info->student_class->name ?></td>
                                                         <td><?= @$attendance->student_info->section->name ?></td>
                                                         <td><?= @$attendance->total_student ?></td>

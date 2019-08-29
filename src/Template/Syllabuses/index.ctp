@@ -11,14 +11,21 @@
                     <?= $this->Form->create($syllabus,['id'=>'ServiceForm','type'=>'file']) ?>
                     <div class="newRow">
                         <div class="row oneRow">
-                           <div class="col-md-6">
+                           <div class="col-md-4">
                                 <label class="control-label"> Class <span class="required" aria-required="true"> * </span></label>
                                 <?php echo $this->Form->control('faculty_class_mapping_id[]', ['empty'=>'--- Select---','options' => $option,'class'=>'select2 classMapping','style'=>'width:100%','label'=>false,'required']);?>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label"> Section</label>
+                                <?php $i=0;echo $this->Form->control('section_id'.$i,[
+                                'label' => false,'class'=>'select2 section','empty'=>'---Select Section---','options'=>$sections,'id'=>'section_id','multiple'=>true,'style'=>'width:100%']);$i++;?>
+                            </div>
+                            <div>
                             </div>
                             <?php echo $this->Form->control('medium_id[]',['label' => false,'class'=>'medium_id','type'=>'hidden']);?>
                             <?php echo $this->Form->control('student_class_id[]',['label' => false,'class'=>'student_class_id','type'=>'hidden']);?>
                             <?php echo $this->Form->control('stream_id[]',['label' => false,'class'=>'stream_id','type'=>'hidden']);?>
-                            <?php echo $this->Form->control('section_id[]',['label' => false,'class'=>'section_id','type'=>'hidden']);?>
+                           <!--  <?php echo $this->Form->control('section_id[]',['label' => false,'class'=>'section_id','type'=>'hidden']);?> -->
                             <?php echo $this->Form->control('subject_id[]',['label' => false,'class'=>'subject_id','type'=>'hidden']);?>
 
                             <div class="col-md-4">
@@ -53,7 +60,7 @@
 </div>
 <div class="dummeyRow" style="display:none">
         <div class="row oneRow">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label class="control-label"> Class <span class="required" aria-required="true"> * </span></label>
                 
                     <?php echo $this->Form->control('faculty_class_mapping_id[]', ['empty'=>'--- Select---','options' => $option,'class'=>' classMapping','style'=>'width:100%','label'=>false,'required']);?>
@@ -63,9 +70,13 @@
             <?php echo $this->Form->control('medium_id[]',['label' => false,'class'=>'medium_id','type'=>'hidden']);?>
             <?php echo $this->Form->control('student_class_id[]',['label' => false,'class'=>'student_class_id','type'=>'hidden']);?>
             <?php echo $this->Form->control('stream_id[]',['label' => false,'class'=>'stream_id','type'=>'hidden']);?>
-            <?php echo $this->Form->control('section_id[]',['label' => false,'class'=>'section_id','type'=>'hidden']);?>
+           <!--  <?php echo $this->Form->control('section_id[]',['label' => false,'class'=>'section_id','type'=>'hidden']);?> -->
             <?php echo $this->Form->control('subject_id[]',['label' => false,'class'=>'subject_id','type'=>'hidden']);?>
-            
+            <div class="col-md-2">
+                                <label class="control-label"> Section</label>
+                                <?php echo $this->Form->control('section_id'.$i,[
+                                'label' => false,'class'=>'section','empty'=>'---Select Section---','options'=>$sections,'id'=>'section_id','multiple'=>true,'style'=>'width:100%']);$i++;?>
+                            </div>
             <div class="col-md-4">
                 <label class="control-label"> Upload <span class="required" aria-required="true"> * </span></label>
                <?php echo $this->Form->control('file_path[]',[
@@ -102,13 +113,13 @@ $(document).on('change','.classMapping',function(){
     var mid =$('option:selected',this).attr('mid');
     var cid =$('option:selected',this).attr('cid');
     var stid =$('option:selected',this).attr('stid');
-    var scid =$('option:selected',this).attr('scid');
+    // var scid =$('option:selected',this).attr('scid');
     var subid =$('option:selected',this).attr('subid');
 
     $(this).closest('div.oneRow').find('.medium_id').val(mid);
     $(this).closest('div.oneRow').find('.student_class_id').val(cid);
     $(this).closest('div.oneRow').find('.stream_id').val(stid);
-    $(this).closest('div.oneRow').find('.section_id').val(scid);
+    // $(this).closest('div.oneRow').find('.section_id').val(scid);
     $(this).closest('div.oneRow').find('.subject_id').val(subid);
 
 }); 
@@ -156,6 +167,7 @@ function rename()
 {
     $('.newRow').each(function(){
         $(this).find('select.classMapping').select2();
+        $(this).find('select.section').select2();
     });
 }
 ";

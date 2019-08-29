@@ -10,11 +10,11 @@
                 <label >Concession List </label>
                 
                 <label >Student Ledger </label>
-                <div class="actions pull-right">
+               <!--  <div class="actions pull-right">
                    <?php
                    @$url_excel="/?".$url;
                     echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/FeeCategories/exportConcessionListReport/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
-               </div>
+               </div> -->
             </div>
             <div class="box-body">
                 <?= $this->Form->create('',['id'=>'ServiceForm']) ?>

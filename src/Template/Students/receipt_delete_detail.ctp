@@ -9,9 +9,10 @@
             <div class="box-header with-border" >
                 <label>Receipt Delete Detail</label>
                 <div class="actions pull-right">
-                   <?php
-                   @$url_excel="/?".$url;
-                    echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/Students/exportReceiptDeleteDetailReport/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+                  <!--  <?php
+                    @$url_excel="/?".$url;
+                    echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/Students/exportReceiptDeleteDetailReport/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?> -->
+                    <!-- <?php echo $this->Html->link('Excel',['controller'=>'Students','action' => 'exportStudentListReport',@$list_type,@$medium_id,@$student_class_id,@$stream_id,@$section_id],['target'=>'_blank']); ?> -->
                </div>
             </div>
             <div class="box-body">
