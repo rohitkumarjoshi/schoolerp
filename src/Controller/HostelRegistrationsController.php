@@ -229,6 +229,7 @@ class HostelRegistrationsController extends AppController
                  }
                  $conditions['HostelRegistrations.is_deleted']='N';
                 $HostelRegistrations = $this->paginate($this->HostelRegistrations->find()->where($conditions));
+                //pr($HostelRegistrations->toArray());exit;
                 if(!empty($HostelRegistrations->toArray()))
 	              {
 	                $data_exist='data_exist';

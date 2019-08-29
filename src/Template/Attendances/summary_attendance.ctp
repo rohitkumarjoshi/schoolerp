@@ -37,7 +37,7 @@
                                         <h3>Attendance Summary Report of <?= date('d-m-Y',strtotime($date)) ?></h3>
                                     </center>
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="sample_2" width="100%">
+                                        <table class="table table-bordered" id="" width="100%">
                                             <thead>
                                             <tr>
                                                 <th rowspan="2">Sr. No.</th>
@@ -71,10 +71,30 @@
                                                         <td><?= @$attendance->morning_a + $attendance->morning_a_1?></td>
                                                         <td><?= @$attendance->evening_p ?></td>
                                                         <td><?= @$attendance->evening_a + $attendance->evening_a_1 ?></td>
+                                                        <?php 
+
+                                                            @$mr_pre=$attendance->morning_p;
+                                                            @$mr_abs=$attendance->morning_a + $attendance->morning_a_1;
+                                                            @$eve_pre=$attendance->evening_p;
+                                                            @$eve_abs=$attendance->evening_a + $attendance->evening_a_1;
+
+                                                            @$grand_total+=$attendance->total_student;?>
+                                                        <?php @$total_present+=$mr_pre;?>
+                                                        <?php @$total_absent+=$mr_abs;?>
+                                                        <?php @$evening_present+=$eve_pre;?>
+                                                        <?php @$evening_absent+=$eve_abs;?>
                                                          
                                                 </tr>
 
                                                     <?php } ?>
+                                                <tr>
+                                                    <th colspan="4" style="text-align: center;">Total</th>
+                                                    <th><?= $grand_total ?></th>
+                                                    <th><?= $total_present ?></th>
+                                                    <th><?= $total_absent ?></th>
+                                                    <th><?= $evening_present?></th>
+                                                    <th><?= $evening_absent?></th>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
