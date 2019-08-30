@@ -1,7 +1,9 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 
 /**
  * AcademicCalenders Controller
@@ -12,7 +14,84 @@ use App\Controller\AppController;
  */
 class AcademicCalendersController extends AppController
 {
+	 public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Auth->allow(['sendeventall']);
+    } 
+	
+	public function sendeventall(){
+		
+		$this->loadmodel('SessionYears');
+		$SessionYear=$this->SessionYears->find()->where(['status'=>'Active'])->first();
+		$session_year_id = $SessionYear->id;
+		$AcademicCalenders=$this->AcademicCalenders->find()->where(['AcademicCalenders.session_year_id'=>$session_year_id,'AcademicCalenders.is_deleted'=>'N'])->contain(['AcademicCategories']);
+		//pr($AcademicCalenders->toArray());
+		
+		foreach($AcademicCalenders as $AcademicCalender){
+			$title=$AcademicCalender->academic_category->name;
+			
+			$event_date=date("Y-m-d",strtotime($AcademicCalender->date));
+			$current_date=date("Y-m-d");
+			$checkdate= date("Y-m-d", strtotime("-1 days",strtotime($event_date)));
+			$message="".$AcademicCalender->date."  ".$AcademicCalender->description."";
+			 if(strtotime($checkdate)==strtotime($current_date)){
+				
+				 $this->loadmodel('Users');
+				 $Users=$this->Users->find()->where(['Users.is_deleted'=>'N','device_token !='=>''])->select(['device_token']);
+				 
+				 foreach($Users as $User){
+					 $device_token=$User->device_token;
+					 //$device_token='eSzCiyBARPw:APA91bGHMdjNT9qtAldwWUO-xmI8XqJsxcbaQ2MCas3JU08IMbYIOmaQ7dqqrv22HNFjYp_SAjHIAnAFkSXXxwfEDUkY925EA9o2b60suhugOraiJ0SDVMqddDmpXXS9A6HS08kdvQcJ';
+							$tokens = array($device_token);
 
+								$header = [
+								'Content-Type:application/json',
+								'Authorization: Key=AAAA8Hq2jLc:APA91bEz42EHdwNVDAF5SdL1oKqDQrnVWU2-kIJu_YsIjF93SSHeLWqajg3qyvaJRZ1l9P4QJJWiyvS51djw-Bc1nP_o4P8kfNqruRYIn_13dxWAEd8RkWGHkopgSQbHp1jt5AqW6hrs'
+								];
+
+								$msg = [
+								'title'=> $title,
+								'message' => $message,
+								
+								'link' =>'Alok://home'
+								];
+
+								$payload = array(
+								'registration_ids' => $tokens,
+								'data' => $msg
+								);
+
+								$curl = curl_init();
+								curl_setopt_array($curl, array(
+								CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
+								CURLOPT_RETURNTRANSFER => true,
+								CURLOPT_CUSTOMREQUEST => "POST",
+								CURLOPT_POSTFIELDS => json_encode($payload),
+								CURLOPT_HTTPHEADER => $header
+								));
+								$response = curl_exec($curl);
+								$err = curl_error($curl);
+								curl_close($curl);
+								
+								$final_result=json_decode($response);
+								$sms_flag=$final_result->success;     
+								if ($err) {
+									//echo "cURL Error #:" . $err;
+								} else {
+									echo $response;
+								}            
+									
+					// echo"hello"; exit;
+					 
+				 }
+				 
+			 }
+			
+		}
+		exit;
+	}
+	
     /**
      * Index method
      *
