@@ -55,6 +55,7 @@ class AttendancesController extends AppController
         ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections'],'ClassMappings'=>['Employees']])
         ->where(['Attendances.attendance_date'=>$date])
         ->group(['StudentInfos.student_class_id','StudentInfos.medium_id','StudentInfos.section_id'])->autoFields(true);
+        //pr($attendances->toArray());exit;
 
         $morning_p = $attendances->newExpr()
                 ->addCase(

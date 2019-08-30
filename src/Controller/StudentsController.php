@@ -224,7 +224,7 @@ class StudentsController extends AppController
         $attendances=$this->Students->StudentInfos->Attendances->find()
         ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
         ->where(['Attendances.attendance_date'=>$date,'Attendances.is_deleted'=>'N'])
-        ->enableAutoFields(true);
+        ->autoFields(true);
 
         $present_std = $attendances->newExpr()
                 ->addCase(
@@ -248,9 +248,16 @@ class StudentsController extends AppController
         ->where(['Leaves.is_deleted'=>'N','Leaves.employee_id IS NOT NULL','Leaves.status'=>'Pending']);
         //pr($leaves->toArray());exit;
 
-        $feedbacks=$this->Students->Feedbacks->find()->where(['Feedbacks.is_deleted'=>'N'])->order(['Feedbacks.id'=>'DESC']);
+        $feedbacks=$this->Students->Feedbacks->find()
+        ->select(['total'=>'count(Feedbacks.id)'])
+        ->where(['Feedbacks.is_deleted'=>'N']);
+        //pr($feedbacks->toArray());exit; 
 
-        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date >='=>date('Y-m-d')]);
+        $notices=$this->Students->SessionYears->Notices->find()
+        ->select(['total'=>'count(Notices.id)'])
+        ->where(['Notices.valid_to >='=>date('Y-m-d')]);
+
+        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date <='=>date('Y-m-d')]);
 
          $alok_kids=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>5,'AcademicCalenders.date >='=>date('Y-m-d')]);
         //pr($holidays->toArray());exit;
@@ -258,7 +265,7 @@ class StudentsController extends AppController
         $events=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>3,'AcademicCalenders.date >='=>date('Y-m-d')]);
 
 
-        $this->set(compact('total_enquiry','total_admission','total_admission_form','dailyAmounts','attendances','leaves','feedbacks','holidays','events','alok_kids'));
+        $this->set(compact('total_enquiry','total_admission','total_admission_form','dailyAmounts','attendances','leaves','feedbacks','holidays','events','alok_kids','notices'));
     }
     public function getStudent()
     {
@@ -1604,7 +1611,7 @@ class StudentsController extends AppController
         $month_id=$this->request->query('month_id'); 
         $fee_category_ids=$this->request->query('fee_category_id'); 
         $section_id=$this->request->query('section_id'); 
-
+            pr($this->request->query()); exit;
         $sessionYears=$this->Auth->User('session_year_id');
         $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
          $section_data=[];
@@ -1655,6 +1662,7 @@ class StudentsController extends AppController
 	 public function dueListReport()
     {
         $sessionYears=$this->Auth->User('session_year_id');
+       // $sessionYears=$this->Auth->User('export');
         $mediums = $this->Students->StudentInfos->Mediums->find('list')->where(['is_deleted'=>'N']);
          $section_data=[];
         $feeMonths=$this->Students->StudentInfos->FeeReceipts->FeeTypeMasters->FeeTypeMasterRows->FeeMonths->find('list')->select(['id','name'])->order(['id'=>'ASC']);
@@ -1666,6 +1674,12 @@ class StudentsController extends AppController
 		foreach($sections as $key=>$data){
 			$section_data[$key]=$data;
 		}
+        $medium_id= '';
+        $student_class_id= '';
+        $stream_id= '';
+        $month_id= '';
+        $fee_category_ids='';
+        $section_id='';
 		
         $studentInfos =array();
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -1704,7 +1718,7 @@ class StudentsController extends AppController
         } 
         $Component = $this->FeeReceipt;
 		
-        $this->set(compact('mediums','feeCategories','feeMonths','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids','sections','section_id','section_data'));
+        $this->set(compact('mediums','feeCategories','feeMonths','feeTypeRoles','studentClasses','categoryData','sessionYears','Component','month_id','fee_category_ids','sections','section_id','section_data','medium_id','student_class_id','stream_id','month_id','fee_category_ids','section_id'));
     }
 
      public function exportStudentLedgerReport($medium_id,$student_class_id,$stream_id)
@@ -2079,9 +2093,9 @@ class StudentsController extends AppController
             $url=parse_url($url,PHP_URL_QUERY);
             
             
-                $fee_type_role_ids=$this->request->query('fee_type_role_id'); 
-                //pr($fee_type_role_ids);exit;
-                $fee_category_ids=$this->request->query('fee_category_id'); 
+                @$fee_type_role_ids=$this->request->query('fee_type_role_id'); 
+                $fee_category_ids=$this->request->query('fee_category_id');
+                //pr($fee_category_ids);exit;
                 $daterange=$this->request->query('daterange'); 
                 $date_from=date('Y-m-d',strtotime($daterange[0]));
                 $date_to=date('Y-m-d',strtotime($daterange[1]));
@@ -2094,6 +2108,11 @@ class StudentsController extends AppController
                             ->where(['fee_type_role_id IN'=>$fee_type_role_ids])
                             ->first();
                 $fee_category_ids[]=$getFeeTypeRoles->fee_category_id;
+            }
+            else
+            {
+
+                $fee_category_ids=$this->request->query('fee_category_id'); 
             }
             
             $studentLedgers = $this->Students->StudentInfos->DeleteFeeReceipts->find();
@@ -2120,12 +2139,12 @@ class StudentsController extends AppController
 
     public function receiptDeleteDetail()
     {
-         $url=$this->request->here();
-            $url=parse_url($url,PHP_URL_QUERY);
         if ($this->request->is(['post','put'])) 
         {
             $fee_type_role_ids=$this->request->getData('fee_type_role_id');
             $fee_category_ids=$this->request->getData('fee_category_id');
+            //pr($fee_type_role_ids);
+            //pr($fee_category_ids);exit;                             
             $daterange=explode('/',$this->request->getData('daterange'));
             $date_from=date('Y-m-d',strtotime($daterange[0]));
             $date_to=date('Y-m-d',strtotime($daterange[1]));
@@ -2157,7 +2176,7 @@ class StudentsController extends AppController
         $feeTypeRoles = $this->Students->StudentInfos->FeeReceipts->FeeCategories->FeeTypes->FeeTypeRoles->find();
         $feeCategories = $this->Students->StudentInfos->FeeReceipts->FeeCategories->find();
         $feeCategories->where(['is_deleted'=>'N'])->contain(['FeeTypes'=>'FeeTypeRoles']);
-        $this->set(compact('studentLedgers','feeTypeRoles','feeCategories','url'));
+        $this->set(compact('studentLedgers','feeTypeRoles','feeCategories','fee_category_ids','fee_type_role_ids'));
     }
 
     public function exportStudentListReport($list_type,$medium_id,$student_class_id,$stream_id,$section_id)
@@ -2498,6 +2517,7 @@ class StudentsController extends AppController
            
         }
         $sections = $this->Students->StudentInfos->Sections->find('list')->where(['is_deleted'=>'N']);
+        //pr($sections->toArray());exit;
 		foreach($sections as $key=>$data){
 			$section_data[$key]=$data;
 		}

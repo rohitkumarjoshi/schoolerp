@@ -1,6 +1,6 @@
 <?php 
 
-	$date= date("d-m-Y"); 
+	/*$date= date("d-m-Y"); 
 	$time=date('h:i:a',time());
 
 	$filename="Due List Report".$date.'_'.$time;
@@ -11,7 +11,7 @@
 	header ("Pragma: no-cache");
 	header ("Content-type: application/vnd.ms-excel");
 	header ("Content-Disposition: attachment; filename=".$filename.".xls");
-	header ("Content-Description: Generated Report" );
+	header ("Content-Description: Generated Report" );*/
 
 ?>
 
@@ -40,7 +40,8 @@
                                             <th style="text-align: center;">Scholar No.</th>
                                             <th>Name</th> 
                                             <?php
-                                            if(in_array(1,$fee_category_ids))
+                                            $a[0]=1;
+                                            if(in_array($a,$fee_category_ids))
                                             {
                                                 ?>
                                                 <th style="text-align: center;">Months for which the Fee is Due</th> 

@@ -215,10 +215,10 @@ class HostelRegistrationsController extends AppController
         ];
         //-------Filter Box--------------//
         $data_exist='';
-        if ($this->request->is('post')) 
-            {
-                $student_id=$this->request->getData('student_id');
-                $gender=$this->request->getData('gender');
+        // if ($this->request->is('post')) 
+        //     {
+                $student_id=$this->request->query('student_id');
+                $gender=$this->request->query('gender');
                 if(!empty($student_id))
                  {
                     $conditions['HostelRegistrations.student_id']=$student_id; 
@@ -229,6 +229,7 @@ class HostelRegistrationsController extends AppController
                  }
                  $conditions['HostelRegistrations.is_deleted']='N';
                 $HostelRegistrations = $this->paginate($this->HostelRegistrations->find()->where($conditions));
+                //pr($HostelRegistrations->toArray());exit;
                 if(!empty($HostelRegistrations->toArray()))
 	              {
 	                $data_exist='data_exist';
@@ -236,7 +237,7 @@ class HostelRegistrationsController extends AppController
               else{
                 	$data_exist='No Record Found';
               	}  
-            }
+           // }
             $students = $this->HostelRegistrations->Students->find('list')->innerJoinWith('StudentInfos');
             $this->set(compact('HostelRegistrations','students','data_exist'));
     }

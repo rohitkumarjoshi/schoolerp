@@ -65,6 +65,9 @@ class SessionYearsTable extends Table
         $this->setDisplayField('session_name');
         $this->setPrimaryKey('id');
 
+         $this->hasMany('Notices', [
+            'foreignKey' => 'session_year_id'
+        ]);
         $this->hasMany('BookIssueReturns', [
             'foreignKey' => 'session_year_id'
         ]);

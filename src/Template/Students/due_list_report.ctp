@@ -1,6 +1,6 @@
 <?php echo $this->Html->css('mystyles'); ?>
 <?php
-//pr(@$fee_category_ids);exit;
+$fee_category_idd=(json_encode(@$fee_category_ids));
 use Cake\Controller\Component;
  
 /**
@@ -18,11 +18,11 @@ use Cake\Controller\Component;
         <div class="box box-primary">
             <div class="box-header with-border" >
                 <label >Due List</label>
-                <div class="actions pull-right">
+                <!-- <div class="actions pull-right">
                            <?php
-                           @$url_excel="/?".$url;
+                           @$url_excel="?fee_category_ids=".$fee_category_idd;
                             echo $this->Html->link('<i class="fa fa-file-excel-o"></i> Excel','/Students/exportDueListReport/'.$url_excel,['class' =>'btn  green tooltips','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
-                </div>
+                </div> -->
             </div>
             <div class="box-body">
                 <?= $this->Form->create('form1',['class'=>'FormSubmit','id'=>'ServiceForm']) ?>

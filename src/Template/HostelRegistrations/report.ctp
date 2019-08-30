@@ -7,7 +7,7 @@
 			<div class="box-body">
 				<div class="row">
 					<div class="col-md-12">
-						<?= $this->Form->create(' ',['class'=>'ServiceForm']) ?>
+						<form method="GET" >
 								<div class="col-md-12 " >
 									<div class="row"> 
 										<div class="col-md-3">
@@ -28,13 +28,13 @@
 			                             </div>
 									</div>
 								</div>
-						<?= $this->Form->end() ?>
+						</form>
 					</div>
 				</div>
 			
 			<?php if($data_exist=='data_exist') { ?>
 				
-					<?php $page_no=$this->Paginator->current('HostelRegistrations'); $page_no=($page_no-1)*10; ?>
+					<?php $page_no=$this->Paginator->current('HostelRegistrations'); $page_no=($page_no-1)*20; ?>
 					<table id="example1" class="table">
 						<thead>
 							<tr>
@@ -89,9 +89,14 @@
 						<?php $i++; endforeach; ?>
 						</tbody>
 					</table>
-					<div class="box-footer">
-						<?= $this->element('pagination') ?> 
-					</div>
+					<div class="paginator">
+					<ul class="pagination">
+						<?= $this->Paginator->prev('< ' . __('previous')) ?>
+						<?= $this->Paginator->numbers() ?>
+						<?= $this->Paginator->next(__('next') . ' >') ?>
+					</ul>
+					<p><?= $this->Paginator->counter() ?></p>
+				</div> 
 			<?php } else { ?>
                  <div class="row">
                     <div class="col-md-12 text-center">

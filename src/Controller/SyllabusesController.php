@@ -46,20 +46,23 @@ class SyllabusesController extends AppController
             $x=0;
              $save=0;
             foreach ($faculty_class_mapping_id as $faculty_class_mapping) {
+
+            $sections=$this->request->getData('section_id'.$x);
+            foreach ($sections as $section) {
                 $syllabus=$this->Syllabuses->newEntity();
                 $syllabus->session_year_id=$session_year_id;
                 $syllabus->created_by =$user_id;
                 $syllabus->medium_id =@$medium_id[$x];
                 $syllabus->student_class_id =@$student_class_id[$x];
                 $syllabus->stream_id =@$stream_id[$x];
-                $syllabus->section_id =@$section_id[$x];
+                $syllabus->section_id =@$section;
                 $syllabus->subject_id =@$subject_id[$x];
                 $files = $this->request->getData('file_path');
                 $ext=explode('/',$files[$x]['type']);
                 $file_name='syllabus'.time().rand().'.'.$ext[1];
                 $keyname = 'syllabus/'.$file_name;
                 $syllabus->file_path = $keyname;
-                /// pr($syllabus); exit;
+                //pr($syllabus); exit;
                 $this->AwsFile->putObjectFile($keyname,$files[$x]['tmp_name'],$files[$x]['type']);
                
                 if($this->Syllabuses->save($syllabus)){
@@ -70,7 +73,7 @@ class SyllabusesController extends AppController
 				if(empty($str_id)){
 					$str_id=0;
 				}
-				$StudentInfos=$this->Syllabuses->StudentInfos->find()->where(['student_class_id'=>$student_class_id[$x],'medium_id'=>$medium_id[$x],'stream_id'=>$str_id,'section_id'=>$section_id[$x],'StudentInfos.session_year_id'=>$session_year_id])->contain(['Students'=>['Users']])->toArray();
+				$StudentInfos=$this->Syllabuses->StudentInfos->find()->where(['student_class_id'=>$student_class_id[$x],'medium_id'=>$medium_id[$x],'stream_id'=>$str_id,'section_id'=>$section,'StudentInfos.session_year_id'=>$session_year_id])->contain(['Students'=>['Users']])->toArray();
 	
 			
 				$Notifications=$this->Notifications->newEntity();
@@ -97,7 +100,7 @@ class SyllabusesController extends AppController
 				
 			}
 		// End 
-					
+				}	
                 }
                 $x++;
             }
@@ -112,7 +115,7 @@ class SyllabusesController extends AppController
         }
         $data->select(['id'=>'FacultyClassMappings.id','Subname'=>'Subjects.name','Subid'=>'Subjects.id']);
         $data->contain(['Subjects','ClassMappings'=>function($q)use($session_year_id){
-            return $q->select(['Mname'=>'Mediums.name','Mid'=>'Mediums.id','Cname'=>'StudentClasses.name','Cid'=>'StudentClasses.id','Sname'=>'Streams.name','STid'=>'Streams.id','SCname'=>'Sections.name','SCid'=>'Sections.id'])
+            return $q->select(['Mname'=>'Mediums.name','Mid'=>'Mediums.id','Cname'=>'StudentClasses.name','Cid'=>'StudentClasses.id','Sname'=>'Streams.name','STid'=>'Streams.id'])
             ->where(['ClassMappings.session_year_id'=>$session_year_id])
             ->contain(['Mediums','StudentClasses','Streams','Sections']);
         }]);
@@ -122,7 +125,7 @@ class SyllabusesController extends AppController
             $name = '';
             foreach ($d->toArray() as $key2 => $value)
             {
-                if(!empty($value) && ( ($key2 != 'id') && ($key2 != 'Subname') && ($key2 != 'Mid') && ($key2 != 'Cid') && ($key2 != 'STid') && ($key2 != 'SCid') && ($key2 != 'Subid') ) )
+                if(!empty($value) && ( ($key2 != 'id') && ($key2 != 'Subname') && ($key2 != 'Mid') && ($key2 != 'Cid') && ($key2 != 'STid')  && ($key2 != 'Subid') ) )
                 { 
                         if($key2 != 'Mname')
                         $name.=" -> ";
@@ -136,13 +139,15 @@ class SyllabusesController extends AppController
                 'mid'=>$d->Mid,
                 'cid'=>$d->Cid,
                 'stid'=>$d->STid,
-                'scid'=>$d->SCid,
+                //'scid'=>$d->SCid,
                 'subid'=>$d->Subid,
             ];
+            //pr($option);exit;
         } 
 
         $media = $this->Syllabuses->Mediums->find('list')->where(['Mediums.is_deleted'=>'N']);
-        $this->set(compact('syllabuses','syllabus', 'media', 'studentClasses', 'streams','option'));
+        $sections = $this->Syllabuses->Sections->find('list')->where(['is_deleted'=>'N']);
+        $this->set(compact('syllabuses','syllabus', 'media', 'studentClasses', 'streams','option','sections'));
     }
 
     public function studentView()
