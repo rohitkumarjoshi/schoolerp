@@ -257,7 +257,7 @@ class StudentsController extends AppController
         ->select(['total'=>'count(Notices.id)'])
         ->where(['Notices.valid_to >='=>date('Y-m-d')]);
 
-        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date <='=>date('Y-m-d')]);
+        $holidays=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>2,'AcademicCalenders.date >='=>date('Y-m-d')]);
 
          $alok_kids=$this->Students->SessionYears->AcademicCalenders->find()->where(['AcademicCalenders.is_deleted'=>'N','AcademicCalenders.academic_category_id'=>5,'AcademicCalenders.date >='=>date('Y-m-d')]);
         //pr($holidays->toArray());exit;

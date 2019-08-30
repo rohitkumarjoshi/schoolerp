@@ -75,6 +75,9 @@
                                                 <th>Scholar No.</th>
                                                 <th>Name</th>
                                                 <th>Father's Name</th>
+                                                <th>Medium</th>
+                                                <th>Class</th>
+                                                <th>Section</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -88,6 +91,9 @@
                                                         <td><?= @$attendance->student_info->student->scholar_no?></td>
                                                         <td><?= @$attendance->student_info->student->name ?></td>
                                                         <td><?= @$attendance->student_info->student->father_name ?></td>
+                                                        <td><?= @$attendance->student_info->medium->name ?></td>
+                                                        <td><?= @$attendance->student_info->student_class->name ?></td>
+                                                        <td><?= @$attendance->student_info->section->name ?></td>
                                                 </tr>
 
                                                     <?php } ?>

@@ -139,6 +139,7 @@ class AttendancesController extends AppController
             $medium_id=$this->request->getData('medium_id');
             $student_months=$this->request->getData('student_months');
             $student_class_id=$this->request->getData('student_class_id');
+            //pr($student_class_id);exit;
             $section_id=$this->request->getData('section_id');
 
             if(!empty($student_months))
@@ -148,15 +149,16 @@ class AttendancesController extends AppController
 
             if(!empty($medium_id))
             {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.medium_id'=>$medium_id,'Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+                $attendances=$this->Attendances->find()->where(['StudentInfos.medium_id'=>$medium_id])->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
+                //pr($attendances->toArray());exit;
             }
             if(!empty($student_class_id))
             {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.student_class_id'=>$student_class_id,'Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+                $attendances=$this->Attendances->find()->where(['StudentInfos.student_class_id'=>$student_class_id])->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
             }
             if(!empty($section_id))
             {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.section_id'=>$section_id,])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+                $attendances=$this->Attendances->find()->where(['StudentInfos.section_id'=>$section_id,])->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
             }
             //ini_set('memory_limit', '-1');
 
