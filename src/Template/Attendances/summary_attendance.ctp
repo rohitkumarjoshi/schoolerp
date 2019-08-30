@@ -89,11 +89,11 @@
                                                     <?php } ?>
                                                 <tr>
                                                     <th colspan="4" style="text-align: center;">Total</th>
-                                                    <th><?= $grand_total ?></th>
-                                                    <th><?= $total_present ?></th>
-                                                    <th><?= $total_absent ?></th>
-                                                    <th><?= $evening_present?></th>
-                                                    <th><?= $evening_absent?></th>
+                                                    <th><?= @$grand_total ?></th>
+                                                    <th><?= @$total_present ?></th>
+                                                    <th><?= @$total_absent ?></th>
+                                                    <th><?= @$evening_present?></th>
+                                                    <th><?= @$evening_absent?></th>
                                                 </tr>
                                             </tbody>
                                         </table>

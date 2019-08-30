@@ -142,25 +142,18 @@ class AttendancesController extends AppController
             //pr($student_class_id);exit;
             $section_id=$this->request->getData('section_id');
 
-            if(!empty($student_months))
-            {
-                $attendances=$this->Attendances->find()->where(['Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
-            }
+            // if(!empty($student_months))
+            // {
+            //     $attendances=$this->Attendances->find()->where(['Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+            // }
 
-            if(!empty($medium_id))
+            if((!empty($medium_id))&&(!empty($student_class_id))&&(!empty($section_id)))
             {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.medium_id'=>$medium_id])->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
-                //pr($attendances->toArray());exit;
+                $attendances=$this->Attendances->find()
+                ->where(['StudentInfos.medium_id'=>$medium_id,'StudentInfos.student_class_id'=>$student_class_id,'StudentInfos.section_id'=>$section_id])
+                ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+                ->group(['StudentInfos.student_id']);
             }
-            if(!empty($student_class_id))
-            {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.student_class_id'=>$student_class_id])->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
-            }
-            if(!empty($section_id))
-            {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.section_id'=>$section_id,])->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']]);
-            }
-            //ini_set('memory_limit', '-1');
 
 
            
