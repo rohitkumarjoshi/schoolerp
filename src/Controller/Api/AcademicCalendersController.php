@@ -142,7 +142,8 @@ class AcademicCalendersController extends AppController
 					$examArray=array();
 					$holidayArray=array();
 					$otherArray=array();
-
+					$kidsArray=array();
+					
 					if($AcademicCount>0)
 					{
 						foreach($academicCalenders as $academicCalender)
@@ -179,6 +180,14 @@ class AcademicCalendersController extends AppController
 									'date' => $academicCalender->date, 
 								);
 							}
+							if($academicCalender->academic_category_id==5){
+								$kidsArray[] = array(
+									'id' => $academicCalender->id,
+									'name' => $academicCalender->description,
+									'type' => $academicCalender->academic_category->name,
+									'date' => $academicCalender->date, 
+								);
+							}
 						}
 					}
 					$result1[] = array(
@@ -187,7 +196,8 @@ class AcademicCalendersController extends AppController
 						'examArray' => $examArray,
 						'holidayArray' => $holidayArray,
 						'eventsArray' => $eventsArray,
-						'otherArray' => $otherArray
+						'otherArray' => $otherArray,
+						'kidsArray' => $kidsArray
 					);  
 				}
 	 			$yearArray[]=array('year'=> (string)$x,'monthdata'=> $result1);

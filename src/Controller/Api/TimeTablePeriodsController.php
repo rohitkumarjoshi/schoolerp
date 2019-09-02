@@ -45,10 +45,10 @@ class TimeTablePeriodsController extends AppController
         if($user_type=='Student'){
             $studentinfo = $this->TimeTablePeriods->StudentInfos->find()
                 ->where(['StudentInfos.student_id'=>$user_id,'StudentInfos.session_year_id'=>$currentSession])->first();
-            $medium_id = $studentinfo->medium_id;  
-            $student_class_id = $studentinfo->student_class_id;  
-            $stream_id = $studentinfo->stream_id;  
-            $section_id = $studentinfo->section_id; 
+             $medium_id = $studentinfo->medium_id;  
+             $student_class_id = $studentinfo->student_class_id;  
+             $stream_id = $studentinfo->stream_id;  
+             $section_id = $studentinfo->section_id;
             if(!empty($medium_id)){
                 $condition['TimeTablePeriods.medium_id']= $medium_id;
             }
@@ -72,7 +72,7 @@ class TimeTablePeriodsController extends AppController
 
             if(!empty($stream_id))
             { 
-                $condition['TimeTablePeriods.stream_id']= $stream_id;
+                //$condition['TimeTablePeriods.stream_id']= $stream_id;
             }
             else{ 
                 //$condition['TimeTablePeriods.stream_id IS NULL'];

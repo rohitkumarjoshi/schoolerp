@@ -78,20 +78,20 @@ class AttendancesController extends AppController
 				$device_token=$StudentInfos->user->device_token;
 				$title="Attendance";
 				$message="Your ward is ".$check."";
-				if(!empty($device_token)){
+				 if(!empty($device_token)){
 							
 								$tokens = array($device_token);
 
 								$header = [
 								'Content-Type:application/json',
-								'Authorization: Key=AAAABVEB0FY:APA91bGo3Y-hslS9_ztp95KFdzgfkf_IR-KR1K9WJlPo5wGYtWFunp_LK3zy8Dom3DJo2UV9IXBbcO_hDeLFRf6hUHt-QelMevoA0O4b_DC3VpH_POvBM2NG0_z20Iztzp7lE1FtTV8e'
+								'Authorization: Key=AAAA8Hq2jLc:APA91bEz42EHdwNVDAF5SdL1oKqDQrnVWU2-kIJu_YsIjF93SSHeLWqajg3qyvaJRZ1l9P4QJJWiyvS51djw-Bc1nP_o4P8kfNqruRYIn_13dxWAEd8RkWGHkopgSQbHp1jt5AqW6hrs'
 								];
 
 								$msg = [
 								'title'=> $title,
 								'message' => $message,
 								
-								'link' =>''
+								'link' =>'Alok://home'
 								];
 
 								$payload = array(
@@ -114,12 +114,12 @@ class AttendancesController extends AppController
 								$final_result=json_decode($response);
 								$sms_flag=$final_result->success;     
 								if ($err) {
-									echo "cURL Error #:" . $err;
+									//echo "cURL Error #:" . $err;
 								} else {
-									echo $response;
+									//echo $response;
 								}            
 									
-						} 
+						}  
 				
 				//End
 				$attendance->class_mapping_id = $class_section_id;

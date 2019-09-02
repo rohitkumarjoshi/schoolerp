@@ -325,7 +325,8 @@ class LeavesController extends AppController
         $condition['StudentInfoApis.session_year_id']= $session_year_id; 
 
         $studentList = $this->Leaves->Students->StudentInfoApis->find();
-		$studentList->contain('Students')->where($condition);
+		
+		$studentList->contain('Students')->where($condition)->order(['Students.name'=>'ASC']);
 		if($elective=='Yes'){
 			$studentList->contain(['StudentElectiveSubjects'=>function($q) use($session_year_id,$subject_id){
 				return $q->where(['StudentElectiveSubjects.session_year_id'=>$session_year_id,'StudentElectiveSubjects.subject_id'=>$subject_id]);
