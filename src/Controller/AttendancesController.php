@@ -136,29 +136,69 @@ class AttendancesController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) 
         {
+            $i=1;
             $medium_id=$this->request->getData('medium_id');
             $student_months=$this->request->getData('student_months');
             $student_class_id=$this->request->getData('student_class_id');
+            //pr($student_class_id);exit;
             $section_id=$this->request->getData('section_id');
+           // $month1=explode('-', $student_months);
+            $year="2019";
+           $F_date=$year.'-'.$student_months.'-01';
+           $first_date=date('Y-m-d',strtotime($F_date));
+           $last_date=date('Y-m-t',strtotime($F_date));
+           
+            // if(!empty($student_months))
+            // {
+            //     $attendances=$this->Attendances->find()->where(['Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+            // }
 
-            if(!empty($student_months))
+            if((!empty($medium_id))&&(!empty($student_months))&&(!empty($student_class_id))&&(!empty($section_id)))
             {
-                $attendances=$this->Attendances->find()->where(['Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
-            }
+                @$no_month=cal_days_in_month(CAL_GREGORIAN,$student_months,2019);
 
-            if(!empty($medium_id))
-            {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.medium_id'=>$medium_id,'Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
+
+               
+                $attendances=$this->Attendances->find()
+                ->where(['StudentInfos.medium_id'=>$medium_id,'StudentInfos.student_class_id'=>$student_class_id,'StudentInfos.section_id'=>$section_id,'Attendances.attendance_date >=' => $first_date,'Attendances.attendance_date <=' => $last_date])
+                ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+                ;
+               $AttendancesFirstHalf=array();
+               $AttendancesSecondHalf=array();
+               $studenlist=array();
+               foreach ($attendances as $attendance) { 
+                    $Date=strtotime($attendance->attendance_date);
+                      // $attendance_status=$attendance->attendance_status;
+                       $AttendancesFirstHalf[$attendance->student_info->student_id][$Date]=$attendance->first_half;
+                      
+                       $AttendancesSecondHalf[$attendance->student_info->student_id][$Date]=$attendance->second_half;
+
+                       $studenlist[$attendance->student_info->student_id]=['student_name'=>$attendance->student_info->student->name,'father_name'=>$attendance->student_info->student->father_name,'scoler_no'=>$attendance->student_info->student->scholar_no];
+                  
+               }
+                    //pr($studenlist); exit;
+
+
+
+               //  $attendances=$this->Attendances->find()
+               //  ->where(['StudentInfos.medium_id'=>$medium_id,'StudentInfos.student_class_id'=>$student_class_id,'StudentInfos.section_id'=>$section_id,'Attendances.attendance_date LIKE'=>'2019-'.$student_months.'-%'])
+               //  ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
+               //  ->group(['StudentInfos.student_id']);
+
+               //  //pr($attendances->toArray());exit;
+
+               //  foreach ($attendances as $key =>$data) {
+               //      //pr($val->attendance_date);exit;
+               //      for ($a = 1; $a <= $no_month; $a++) {
+
+                        
+
+
+               //      }
+
+               // }
+
             }
-            if(!empty($student_class_id))
-            {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.student_class_id'=>$student_class_id,'Attendances.attendance_date LIKE'=>'%'.$student_months.'%'])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
-            }
-            if(!empty($section_id))
-            {
-                $attendances=$this->Attendances->find()->where(['StudentInfos.section_id'=>$section_id,])->contain(['StudentInfos'=>['Students']])->group(['Attendances.student_info_id']);
-            }
-            //ini_set('memory_limit', '-1');
 
 
            
@@ -167,8 +207,9 @@ class AttendancesController extends AppController
         $mediums=$this->Attendances->StudentInfos->Mediums->find('list')->where(['Mediums.is_deleted'=>'N']);
         $sections=$this->Attendances->StudentInfos->Sections->find('list')->where(['Sections.is_deleted'=>'N']);
         $classes=$this->Attendances->StudentInfos->StudentClasses->find('list')->where(['StudentClasses.is_deleted'=>'N']);
+       
 
-        $this->set(compact('attendances','mediums','sections','month','classes'));
+        $this->set(compact('attendances','mediums','sections','month','classes','show_med','show_class','show_sec','student_months','query','no_month','AttendancesSecondHalf','AttendancesFirstHalf','first_date','last_date','F_date','studenlist'));
     }
 
     /**

@@ -70,7 +70,14 @@
                                             <td><?=h ($enquiryFormStudent->father_name)?></td>
                                             <td style="text-align:center;"><?=h ($enquiryFormStudent->medium->name)?></td>
                                             <td style="text-align:center;"><?=h ($enquiryFormStudent->student_class->name)?></td>
-                                            <td style="text-align:center;"><?=h (@$enquiryFormStudent->stream->name)?></td>
+                                            <td style="text-align:center;"><?php
+                                            @$stream=$enquiryFormStudent->stream->name;
+                                             if($stream !="General")
+                                             {
+                                                echo @$stream;
+                                             }
+
+                                            ?></td>
                                             <td style="text-align:center;"><?=h (@$enquiryFormStudent->entrance_exam_resulte)?></td>
                                             <td style="text-align:center;"><?=h (@$enquiryFormStudent->admission_generated)?></td>
                                         </tr>
