@@ -47,11 +47,11 @@ class ClassTestsController extends AppController
             } 
             $classTest->class_test_students = [];
             $c=0;
-            foreach ($student_id as $studentInfo) {
+            foreach ($student_id as $key=> $studentInfo) {
                  $assignmentStudents = $this->ClassTests->ClassTestStudents->newEntity();
                  $assignmentStudents->student_info_id=$studentInfo;
                  $assignmentStudents->created_by =$user_id;
-                 $assignmentStudents->marks=$marks[$c];
+                 $assignmentStudents->marks=$marks[$key];
                  $classTest->class_test_students[]=$assignmentStudents;
                  $c++;
             } 
@@ -89,13 +89,13 @@ class ClassTestsController extends AppController
             $x=0;
             $y=0;
 
-            foreach ($student_id as $student) {
+            foreach ($student_id as $key=>$student) {
                 $this->ClassTests->ClassTestStudents->deleteAll(['ClassTestStudents.class_test_id'=>$id,'ClassTestStudents.student_info_id'=>$student]);
                 $classtestStudent = $this->ClassTests->ClassTestStudents->newEntity();
                 $classtestStudent->student_info_id = $student;
                 $classtestStudent->class_test_id = $id;
                 $classtestStudent->created_by = $user_id;
-                $classtestStudent->marks = $marks[$x];
+                $classtestStudent->marks = $marks[$key];
                 if ($this->ClassTests->ClassTestStudents->save($classtestStudent)){
                     $y=1;
                 }
@@ -177,7 +177,11 @@ class ClassTestsController extends AppController
     public function classTestStudents(){
         $id = $this->request->getQuery('id'); 
         $classTestStudents = $this->ClassTests->find()
-            ->contain(['StudentClasses', 'Streams', 'Sections','Subjects','ClassTestStudents'=>['StudentInfos'=>['Students']]])
+            /* ->contain(['StudentClasses', 'Streams', 'Sections','Subjects','ClassTestStudents'=>['StudentInfos'=>['Students']]]) */
+			->contain(['StudentClasses', 'Streams', 'Sections','Subjects','ClassTestStudents'=>function($q){
+					return $q->order(['Students.name'])->contain(['StudentInfos'=>['Students']]);
+				}
+			])
             ->where(['ClassTests.is_deleted'=>'N','ClassTests.id'=>$id])->first();
         
         if($classTestStudents){
