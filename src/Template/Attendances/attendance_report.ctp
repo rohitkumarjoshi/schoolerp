@@ -80,7 +80,7 @@
                     <?php if(!empty($attendances)) {?>
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-12" style="height: 400px; overflow-y: scroll;">
                                     <center>
                                         <h3>Attendance List Report</h3>
                                     </center>
@@ -149,17 +149,55 @@
                                                     $total_AB=0;
                                                     $total_O=0;
                                                     $total_F=0;
-                                                    $total_Leave=0;
+                                                    $total_present=0;
+                                                    $total_absent=0;
                                                     while (strtotime($first_date) <= strtotime($last_date)) {
                                                         $show_date=strtotime($first_date);
                                                         $status = @$AttendancesFirstHalf[$key][$show_date];
                                                         $show_Lable='';
                                                         
-                                                        if($status==0.5){
+
+                                                        $show_dates=strtotime($last_date);
+                                                        $last_status = @$AttendancesSecondHalf[$key][$show_dates];
+
+
+                                                        if(($status==0.5)&&($last_status==0.0)){
                                                             $total_HD++;
-                                                            $show_Lable='Half Day';
+                                                            $show_Lable='H';
                                                         }
-                                                       
+                                                        if(($status==0.0)&&($last_status==0.5)){
+                                                            $total_HD++;
+                                                            $show_Lable='H';
+                                                        }
+                                                        if(($status==0.5)&&($last_status==0.5)){
+                                                            $total_HD++;
+                                                            $show_Lable='P';
+                                                        }
+                                                         if(($status==0.5)&&($last_status==0.1)){
+                                                            $total_HD++;
+                                                            $show_Lable='H';
+                                                        }
+                                                        if(($status==0.1)&&($last_status==0.5)){
+                                                            $total_HD++;
+                                                            $show_Lable='H';
+                                                        }
+                                                        if(($status==0.0)&&($last_status==0.1)){
+                                                            $total_HD++;
+                                                            $show_Lable='L';
+                                                        }
+                                                        if(($status==0.0)&&($last_status==0.0)){
+                                                            $total_HD++;
+                                                            $show_Lable='A';
+                                                        }
+                                                         if(($status==0.1)&&($last_status==0.0)){
+                                                            $total_HD++;
+                                                            $show_Lable='L';
+                                                        }
+                                                         if(($status==0.1)&&($last_status==0.1)){
+                                                            $total_HD++;
+                                                            $show_Lable='L';
+                                                        }
+
                                                         echo '<td scope="col"style="width:10%;">'.$show_Lable.'</td>';
                                                         $first_date = date ("Y-m-d", strtotime("+1 day", strtotime($first_date)));
                                                     }

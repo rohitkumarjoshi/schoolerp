@@ -60,7 +60,8 @@ class EnquiryFormStudentsController extends AppController
                 $enquiryFormStudents->where(['enquiry_status' => $enquiry_status]);
             }
         }
-        $enquiryFormStudents->where(['EnquiryFormStudents.session_year_id'=>$session_year_id,'enquiry_no >'=>0])->contain(['Genders','Mediums','StudentClasses']);
+        $enquiryFormStudents->where(['EnquiryFormStudents.session_year_id'=>$session_year_id,'enquiry_no >'=>0])->contain(['Genders','Mediums','StudentClasses','Streams']);
+        //pr($enquiryFormStudents->toArray());exit;
         $studentClasses  = $this->EnquiryFormStudents->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         /*$enquiryStatuses = array('Pending'=>'Pending','Approved'=>'Approved','Reject'=>'Reject','Hold'=>'Hold');*/
         $this->set(compact('enquiryFormStudents','studentClasses','enquiryStatuses'));

@@ -148,6 +148,7 @@ class StudentsTable extends Table
         $this->hasMany('HostelAttendances', [
             'foreignKey' => 'student_id'
         ]);
+        
         $this->hasMany('HostelOutPasses', [
             'foreignKey' => 'student_id'
         ]);

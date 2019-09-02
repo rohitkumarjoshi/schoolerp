@@ -26,6 +26,19 @@ class StudentsController extends AppController
         }
         $this->Security->setConfig('unlockedActions', ['studentLedger','editStudent','getStudent']);
     } 
+
+
+     public function getDetail($student_id = null, $id = null)
+    {
+        $id = $this->EncryptingDecrypting->decryptData($id);
+        $student_id = $this->EncryptingDecrypting->decryptData($student_id);
+
+        $personal_infos=$this->Students->StudentInfos->find()->where(['StudentInfos.id'=>$id])
+        ->contain(['Students'=>['Genders'],'StudentClasses','Sections']);
+        $achivements=$this->Students->StudentAchivements->find()->where(['Achivements.student_id'=>$student_id]);
+
+        $this->set(compact('personal_infos','achivements'));
+    }
 	
 	public function createlogin(){
 		
@@ -510,6 +523,7 @@ class StudentsController extends AppController
         $html = new HtmlHelper(new \Cake\View\View());
         foreach ($students as $studentsForm)
         {
+            $student_id=$studentsForm->id;
             foreach ($studentsForm->student_infos as $student_info) 
             {
                 $id = $this->EncryptingDecrypting->encryptData($student_info->id);
@@ -536,6 +550,7 @@ class StudentsController extends AppController
                     else
                     {
                         $data.=$html->link('Get Fee',['controller'=>'FeeReceipts','action'=>$fee_type,$id],['escape'=>false,'class'=>'btn btn-xs btn-info']);
+                        $data.=$html->link('View',['controller'=>'Students','action'=>'getDetail',$student_id,$id],['escape'=>false,'class'=>'btn btn-xs btn-info']);
                     }
                     $data.='</td>';
                     $data.='</tr>';
@@ -663,7 +678,7 @@ class StudentsController extends AppController
                 $enquiryFormStudents->where(['admission_generated' => $admission_generated]);
             }
         }
-        $enquiryFormStudents->where(['EnquiryForms.session_year_id'=>$session_year_id,'admission_form_no >'=>0])->contain(['Genders','Mediums','StudentClasses']);
+        $enquiryFormStudents->where(['EnquiryForms.session_year_id'=>$session_year_id,'admission_form_no >'=>0])->contain(['Genders','Mediums','StudentClasses','Streams']);
         $studentClasses  = $this->Students->StudentInfos->StudentClasses->find('list')->where(['is_deleted'=>'N']);
         $this->set(compact('enquiryFormStudents','studentClasses','enquiryStatuses'));
     }

@@ -163,7 +163,6 @@ class AttendancesController extends AppController
                 ->where(['StudentInfos.medium_id'=>$medium_id,'StudentInfos.student_class_id'=>$student_class_id,'StudentInfos.section_id'=>$section_id,'Attendances.attendance_date >=' => $first_date,'Attendances.attendance_date <=' => $last_date])
                 ->contain(['StudentInfos'=>['Students','Mediums','StudentClasses','Sections']])
                 ;
-                    // pr($attendances->toArray()); exit;
                $AttendancesFirstHalf=array();
                $AttendancesSecondHalf=array();
                $studenlist=array();
