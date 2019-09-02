@@ -10,80 +10,55 @@
                 <h3 class="box-title" >Student Profile</h3>
             </div>
             <div class="box-body">
-            <?= $this->Form->create() ?>
-               <table class="table table-bordered" id="tab">
-                        <tbody>
-                            <?php foreach ($personal_infos as $personal_info) {?>
-                            <tr>
-                                <th>Name : <?= $personal_info->student->name ?></th>
-                                <th>Class : <?= $personal_info->student_class->name?></th>
-                                <th>Section : <?= $personal_info->section->name?></th>
-                            </tr>
-                            <tr>
-                                <th rowspan="4"><?= $this->Html->image('/img/editicon.png', ['style'=>'width:50px; height:50px;']);?></th>
-                                <th>Scholar No.: <?=$personal_info->student->scholar_no?></th>
-                                <th>Admission Date: <?= date('d-m-Y',strtotime($personal_info->student->registration_date))?></th>
-                                
-                            </tr>
-                            <tr>
-                                <th>Father's Name : <?=$personal_info->student->father_name?></th>
-                                <th>Mother's Name : <?=$personal_info->student->mother_name?></th>
-                            </tr>
-                             <tr>
-                                <th>Gender : <?=$personal_info->student->gender->name?></th>
-                                <th>DOB : <?=$personal_info->student->dob?></th>
-                            </tr>
-                             <tr>
-                                <th>Email : <?=$personal_info->email?></th>
-                                <th>Mobile : <?=$personal_info->student->parent_mobile_no?></th>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                </table>
-               <!--  <table class="table table-bordered table-hover" style="text-align: center;">
+                <table class="table table-bordered" id="tab">
+                            <tbody>
+                                <?php foreach ($personal_infos as $personal_info) {?>
+                                <tr>
+                                    <th>Name : <?= $personal_info->student->name ?></th>
+                                    <th>Class : <?= $personal_info->student_class->name?></th>
+                                    <th>Section : <?= $personal_info->section->name?></th>
+                                </tr>
+                                <tr>
+                                    <th rowspan="4"><?= $this->Html->image('/img/editicon.png', ['style'=>'width:50px; height:50px;']);?></th>
+                                    <th>Scholar No.: <?=$personal_info->student->scholar_no?></th>
+                                    <th>Admission Date: <?= date('d-m-Y',strtotime($personal_info->student->registration_date))?></th>
+                                    
+                                </tr>
+                                <tr>
+                                    <th>Father's Name : <?=$personal_info->student->father_name?></th>
+                                    <th>Mother's Name : <?=$personal_info->student->mother_name?></th>
+                                </tr>
+                                 <tr>
+                                    <th>Gender : <?=$personal_info->student->gender->name?></th>
+                                    <th>DOB : <?=$personal_info->student->dob?></th>
+                                </tr>
+                                 <tr>
+                                    <th>Email : <?=$personal_info->email?></th>
+                                    <th>Mobile : <?=$personal_info->student->parent_mobile_no?></th>
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                </table> 
+                <?php if(!empty($achivements))
+                {?>
+                <span><h4>Achivements</h4></span>
+                <table class="table table-bordered" id="tab">
                     <thead>
-                        <tr>
-                            <th class='text-center'>Months</th>
-                            <?php
-                                $y=0;
-                                foreach ($feeMonths as $key => $value) {
-                                    echo " <th class='text-center'>".$value->name."</th>";
-                                 $y++;
-                                }
-                            ?>
-                        </tr>
+                        <th>Achivement Category</th>
+                        <th>Achivement Type</th>
+                        <th>Achivement Date</th>
                     </thead>
                     <tbody>
+                       <?php foreach ($achivements as $achivement) {?>
                         <tr>
-                            <td class='text-center'> Fee Component
-                                <?= $this->Form->control('check_all', ['type' => 'checkbox','label'=>false,'class'=>'check_all']) ?>
-                            </td>
-                            
+                            <td><?= $achivement->achivement_category->name ?></td>
+                            <td><?= $achivement->achivement_type?></td>
+                            <td><?= date('d-m-Y',strtotime($achivement->achivement_date))?></td>
                         </tr>
-                        
-                         
-                        <tr>
-                            <td> Total Amount</td>
-                          
-                        </tr>
+                       <?php } ?>
                     </tbody>
-                </table> -->
-              <!--   
-                <div align="center" class="">
-                <?php 
-                $id = $EncryptingDecrypting->encryptData($id);
-                if(!empty($fee_type_role_id))
-                {
-                     $fee_type_role_id = $EncryptingDecrypting->encryptData($fee_type_role_id);
-                } 
-                ?>    
-                <?php echo $this->Form->button('Save',['class'=>'btn btn-info submit_fee','type'=>'submit', 'value'=>'save', 'name'=>'save']); ?>
-                <?php echo $this->Form->button('Save & Print',['class'=>'btn btn-info submit_fee','type'=>'submit', 'value'=>'print', 'name'=>'save']); ?>
-                <?= $this->Html->link(__('Invoice Edit'), ['controller' => 'FeeReceipts', 'action' => 'invoiceEdit', $id,$fee_type_role_id],array('escape'=>false,'class'=>'btn btn-warning')) ?>
-                
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#FeeDetails">Show Previous Detail</button>
-                </div> -->
-            <?= $this->Form->end() ?>          
+                </table>
+                <?php } ?>
             </div>
         </div>
     </div>

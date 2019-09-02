@@ -35,7 +35,8 @@ class StudentsController extends AppController
 
         $personal_infos=$this->Students->StudentInfos->find()->where(['StudentInfos.id'=>$id])
         ->contain(['Students'=>['Genders'],'StudentClasses','Sections']);
-        $achivements=$this->Students->StudentAchivements->find()->where(['Achivements.student_id'=>$student_id]);
+        $achivements=$this->Students->StudentAchivements->find()->where(['StudentAchivements.student_id'=>$student_id,'StudentAchivements.is_deleted'=>'N'])->contain(['AchivementCategories']);
+        //pr($achivements->toArray());exit;
 
         $this->set(compact('personal_infos','achivements'));
     }
