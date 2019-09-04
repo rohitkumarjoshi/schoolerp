@@ -30,15 +30,53 @@ class StudentsController extends AppController
 
      public function getDetail($student_id = null, $id = null)
     {
+        $session_year_id = $this->Auth->User('session_year_id');
+
+        $session_year_name=$this->Students->SessionYears->find()
+        ->select(['session_year_name'])
+        ->where(['SessionYears.id'=>$session_year_id]);
+
+        foreach ($session_year_name as $session_name) {
+            $year_name=$session_name->session_year_name;
+        }
+
         $id = $this->EncryptingDecrypting->decryptData($id);
+        //pr($id);exit;
         $student_id = $this->EncryptingDecrypting->decryptData($student_id);
+        //pr($id);exit;
+
+        $studentDocumentPhotos = $this->Students->StudentDocuments->find()->where(['StudentDocuments.student_id'=>$student_id,'document_class_mapping_id Is NULL']);
+
+        $fees=$this->Students->StudentInfos->FeeReceipts->find();
+        //pr($fees->toArray());exit;
 
         $personal_infos=$this->Students->StudentInfos->find()->where(['StudentInfos.id'=>$id])
-        ->contain(['Students'=>['Genders'],'StudentClasses','Sections']);
-        $achivements=$this->Students->StudentAchivements->find()->where(['StudentAchivements.student_id'=>$student_id,'StudentAchivements.is_deleted'=>'N'])->contain(['AchivementCategories']);
-        //pr($achivements->toArray());exit;
+        ->contain(['Students'=>['Genders','StudentDocuments'],'StudentClasses','Sections']);
 
-        $this->set(compact('personal_infos','achivements'));
+        $achivements=$this->Students->StudentAchivements->find()->where(['StudentAchivements.student_id'=>$student_id,'StudentAchivements.is_deleted'=>'N'])->contain(['AchivementCategories']);
+
+        $hostels=$this->Students->HostelRegistrations->find()->where(['HostelRegistrations.student_id'=>$student_id,'HostelRegistrations.is_deleted'=>'N'])->contain(['Hostels','Rooms']);
+
+
+        for ($i = 1; $i <= 12; $i++)
+        {
+            $F_date=$year_name.'-'.$i.'-01';
+            $first_date=date('Y-m-d',strtotime($F_date));
+            $last_date=date('Y-m-t',strtotime($F_date));
+
+                $attendances[$i]=$this->Students->StudentInfos->Attendances->find()
+            ->select(['first_half','second_half'])
+            ->where(['Attendances.student_info_id'=>$id,'Attendances.attendance_date >=' => $first_date,'Attendances.attendance_date <=' => $last_date])->toArray();
+            
+
+         }
+
+        //pr($attendances);exit;
+ 
+        //sprintf('%02s', $i);
+
+
+        $this->set(compact('personal_infos','achivements','year_name','studentDocumentPhotos','first_date','last_date','attendances','hostels'));
     }
 	
 	public function createlogin(){
@@ -477,6 +515,12 @@ class StudentsController extends AppController
         $fee_type='monthlyFee';
         $this->set(compact('StudentClasses','fee_type'));
     }
+    public function studentDetail()
+    {
+        $StudentClasses = $this->Students->StudentInfos->StudentClasses->find('list');
+        $fee_type='monthlyFee';
+        $this->set(compact('StudentClasses','fee_type'));
+    }
     public function getStudentData()
     {
         $success = 0;
@@ -524,7 +568,8 @@ class StudentsController extends AppController
         $html = new HtmlHelper(new \Cake\View\View());
         foreach ($students as $studentsForm)
         {
-            $student_id=$studentsForm->id;
+            $student_id=$this->EncryptingDecrypting->encryptData($studentsForm->id);
+            //pr($student_id);exit;
             foreach ($studentsForm->student_infos as $student_info) 
             {
                 $id = $this->EncryptingDecrypting->encryptData($student_info->id);
@@ -551,6 +596,99 @@ class StudentsController extends AppController
                     else
                     {
                         $data.=$html->link('Get Fee',['controller'=>'FeeReceipts','action'=>$fee_type,$id],['escape'=>false,'class'=>'btn btn-xs btn-info']);
+                    }
+                    $data.='</td>';
+                    $data.='</tr>';
+                    $response[]=$data;
+                    
+            }
+        }
+        if($success==0)
+        {
+            $response[]='
+                        <tr>
+                        <td style="text-align:center !important;" colspan="6"><h3>No record found.</h3></td>
+                        </tr>
+                   ';
+        }
+        $this->set(compact('success','response'));
+        $this->set('_serialize', ['response','success']);
+    }
+    public function getStudentData1()
+    {
+        $success = 0;
+        $class_id=$this->request->getData('class_id');
+        $scholar_no=$this->request->getData('scholar_number');
+        $student_name=$this->request->getData('student_name');
+        $father_name=$this->request->getData('father_name');
+        $fee_type=$this->request->getData('fee_type');
+        $session_year_id=$this->Auth->User('session_year_id');
+      
+        $students=$this->Students->find();
+        if(!empty($scholar_no))
+        {
+            $students->where(function (QueryExpression $exp, Query $q) use($scholar_no) {
+                return $exp->like('Students.scholar_no', '%'.$scholar_no.'%');
+            });
+        }
+        if(!empty($student_name))
+        {
+            $students->where(function (QueryExpression $exp, Query $q) use($student_name) {
+                return $exp->like('Students.name', '%'.$student_name.'%');
+            });
+        }
+        if(!empty($father_name))
+        {
+            $students->where(function (QueryExpression $exp, Query $q) use($father_name) {
+                return $exp->like('Students.father_name', '%'.$father_name.'%');
+            });
+        }
+        $students->contain(['StudentInfos'=>function($studentInfos) use($class_id,$session_year_id){
+                $studentInfos->where(['StudentInfos.session_year_id'=>$session_year_id])->contain(['StudentClasses']);
+                if(!empty($class_id))
+                {
+                    $studentInfos->where(['StudentInfos.student_class_id'=>$class_id]);
+                }
+                return $studentInfos;
+        }]);                
+        @$feeCategories=$this->Students->StudentInfos->FeeReceipts->FeeCategories->get(1);
+       @ $feeTypeRoles=$this->Students->StudentInfos->FeeReceipts->FeeCategories->FeeTypes->FeeTypeRoles->find();
+        @$fee_collection=$feeCategories->fee_collection;
+        
+        $response=[];
+        $sr_no=1;
+
+        $html = new HtmlHelper(new \Cake\View\View());
+        foreach ($students as $studentsForm)
+        {
+            $student_id=$this->EncryptingDecrypting->encryptData($studentsForm->id);
+            //pr($student_id);exit;
+            foreach ($studentsForm->student_infos as $student_info) 
+            {
+                $id = $this->EncryptingDecrypting->encryptData($student_info->id);
+                $success = 1;
+                $data='';
+                $data.='
+                        <tr>
+                        <td style="text-align:center !important;">'.$sr_no++.'</td>
+                        <td style="text-align:center !important;">'.$student_info->student_class->name.'</td>
+                        <td style="text-align:center !important;">'.$studentsForm->scholar_no.'</td>
+                        <td>'.$studentsForm->name.'</td>
+                        <td>'.$studentsForm->father_name.'</td>
+                   ';
+                    $data.='<td style="text-align:center !important;">';
+                    if($fee_collection == 'Individual')
+                    {
+                        foreach ($feeTypeRoles as $feeTypeRole) {
+                            $fee_type_role_id = $this->EncryptingDecrypting->encryptData($feeTypeRole->id);
+                            
+                            
+                            $data.=$html->link('View',['controller'=>'Students','action'=>'getDetail',$student_id,$id],['escape'=>false,'class'=>'btn btn-xs btn-info']);
+                        }
+                    }
+                    else
+                    {
+                      
                         $data.=$html->link('View',['controller'=>'Students','action'=>'getDetail',$student_id,$id],['escape'=>false,'class'=>'btn btn-xs btn-info']);
                     }
                     $data.='</td>';

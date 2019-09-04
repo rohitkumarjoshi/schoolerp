@@ -3,6 +3,7 @@
         margin-bottom: 5px;
     }
 </style>
+<?php $cdn_path = $awsFileLoad->cdnPath(); ?>
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
@@ -14,12 +15,14 @@
                             <tbody>
                                 <?php foreach ($personal_infos as $personal_info) {?>
                                 <tr>
-                                    <th>Name : <?= $personal_info->student->name ?></th>
+                                    <th style="font-weight: bold!important;">Name : <?= $personal_info->student->name ?></th>
                                     <th>Class : <?= $personal_info->student_class->name?></th>
                                     <th>Section : <?= $personal_info->section->name?></th>
                                 </tr>
                                 <tr>
-                                    <th rowspan="4"><?= $this->Html->image('/img/editicon.png', ['style'=>'width:50px; height:50px;']);?></th>
+                                    <th rowspan="4"><?php
+                                    foreach ($studentDocumentPhotos as $pic) {
+                                    echo $this->Html->image($cdn_path.'/'.@$pic->image_path,['style'=>  'margin-top: 0px;height: 100px;align-content: center; background-color: #f9eded00 !important;width: 100px;']);}?></th>
                                     <th>Scholar No.: <?=$personal_info->student->scholar_no?></th>
                                     <th>Admission Date: <?= date('d-m-Y',strtotime($personal_info->student->registration_date))?></th>
                                     
@@ -39,9 +42,9 @@
                                 <?php } ?>
                             </tbody>
                 </table> 
-                <?php if(!empty($achivements))
+                <?php if(!empty($achivements->toArray()))
                 {?>
-                <span><h4>Achivements</h4></span>
+                <span><h4><strong>Achivements</strong></h4></span>
                 <table class="table table-bordered" id="tab">
                     <thead>
                         <th>Achivement Category</th>
@@ -59,307 +62,112 @@
                     </tbody>
                 </table>
                 <?php } ?>
+                <span><h4><strong>Fee History</strong></h4></span>
+                <table class="table table-bordered" id="tab">
+                    <thead>
+                        <th>Part 1</th>
+                        <th>Part 2</th>
+                        <th>Part 3</th>
+                        <th>Part 4</th>
+                        <th>Part 5</th>
+                        <th>Part 6</th>
+                        <th>Part 7</th>
+                        <th>Part 8</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <span><h4><strong>Attendance Record</strong></h4></span>
+                <table class="table table-bordered" id="tab">
+                    <thead>
+                        <?php
+                            for ($i = 1; $i <= 12; $i++)
+                            {
+                                $month_name = date('F', mktime(0, 0, 0, $i, 1, $year_name));
+                                echo '<th>'.$month_name.'</th>';
+                            }
+                        ?>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <?php
+                                for($i=1;$i<=12;$i++)
+                                {
+                                    $d=cal_days_in_month(CAL_GREGORIAN,$i,$year_name);
+                                    echo '<td>Total - '.$d.'</td>';
+                                }
+                            ?>
+                        </tr> 
+                        <tr>
+                        <?php 
+                            for($i=1;$i<=12;$i++)                           
+                                {
+                                    $total_P=0;
+                                    $total_A=0;
+                            foreach ($attendances[$i] as $attend) {
+                                $first_half=$attend->first_half;
+                                $second_half=$attend->second_half;
+                               if(($first_half == 0.5)&&($second_half == 0.5))
+                               {
+                                    $total_P++;
+                               }
+                               if(($first_half == 0.0)&&($second_half == 0.0))
+                               {
+                                    $total_A++;
+                               }
+                                if(($first_half == 1.0)&&($second_half == 1.0))
+                                {
+                                  $total_A++;   
+                                }
+                            }?>
+                            <td>Present -<?= $total_P ?><br>Absent - <?= $total_A ?></td>
+                               <?php } ?>  
+                        </tr>
+                    </tbody>
+                </table>
+                <?php if(!empty($hostels->toArray()))
+                {?>
+                <span><h4><strong>Hostel Record</strong></h4></span>
+                <table class="table table-bordered" id="tab">
+                    <thead>
+                        <th>Hostel Name</th>
+                        <th>Room</th>
+                        <th>Registration No.</th>
+                        <th>Registration Date</th>
+                    </thead>
+                    <tbody>
+                       <?php foreach ($hostels as $hostel) {?>
+                        <tr>
+                            <td><?= $hostel->hostel->hostel_name ?></td>
+                            <td><?= $hostel->room->room_no?></td>
+                            <td>
+                                <?php 
+                               $count= strlen($hostel->registration_no);
+                                if($count<3){
+                                echo "000".$hostel->registration_no;
+                                }else
+                                 {
+                                    echo $hostel->registration_no;
+                                }
+                            ?>
+                            </td>
+                            <td><?= $hostel->registration_date?></td>
+                        </tr>
+                       <?php } ?>
+                    </tbody>
+                </table>
+                <?php } ?>
             </div>
         </div>
     </div>
 </div>
-<!-- <div id="FeeDetails" class="modal fade" role="dialog">
-  <div class="modal-dialog" style="width: 75%;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Monthly Fee Receipt</h4>
-      </div>
-      <div class="modal-body">
-         <table class="table table-bordered table-hover" id="tab">
-            <thead>
-                <tr>
-                    <th>Recipt No.</th> 
-                    <th>Date of Payment</th>
-                    <th>Amount Paid</th>
-                    <th>Concession</th>
-                    <th>Fine</th>
-                    <th>Fee Type (Month)</th>
-                    <th>Remarks</th> 
-                    <th>Action</th> 
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-
-                foreach ($SubmittedFee as $Submittedlist) {
-                    $FeeName=[];
-                    foreach ($Submittedlist->fee_receipt_rows as $key => $value) {
-                        $FeeName[$value->fee_type_master_row->fee_type_master->fee_type->name][]=$value->fee_month->name;
-                    }
-                    $receipt_id=$EncryptingDecrypting->encryptData($Submittedlist->id);
-                    ?>
-                    <tr>
-                        <td><?= $Submittedlist->receipt_no ;?></td>
-                        <td><?= $Submittedlist->receipt_date ;?></td>
-                        <td><?= $Submittedlist->total_amount ;?></td>
-                        <td><?= $Submittedlist->concession_amount ;?></td>
-                        <td><?= $Submittedlist->fine_amount ;?></td>
-                        <td>
-                            <?php
-                            foreach ($FeeName as $key => $value) {
-                                echo $key;
-                                echo '(';
-                                echo implode(',', $value);
-                                echo ')';
-                            }
-                            ?>
-                                
-                        </td>
-                        <td><?= $Submittedlist->remark ;?></td>
-                        <td> 
-                            <?= $this->Html->link('<i class="fa fa-print"></i>',['controller'=>'FeeReceipts','action'=>'receiptPrint','FeeReceipts','monthlyFee',$receipt_id,$student_info_id,$fee_type_role_ids],['escape'=>false,'class'=>'btn btn-primary btn-xs']) ?>
-                            <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $Submittedlist->id; ?>" data-toggle=modal><i class="fa fa-trash-o "></i></a>
-                            
-                        </td>
-                    </tr>
-
-                <?php
-                }
-                ?>
-              
-            </tbody>
-        </table>
-      </div>
-      <div class="modal-footer"> 
-        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-<?php
-
-foreach ($SubmittedFee as $Submittedlist) { 
-   
-    $receipt_id=$EncryptingDecrypting->encryptData($Submittedlist->id);
-    ?>
-<div id="deletemodal<?php echo $Submittedlist->id; ?>" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-md" >
-            <?= $this->Form->create('from',['url'=>['action'=>'delete','monthlyFee',$receipt_id,$student_info_id,$fee_type_role_ids]]) ?>
-            <div class="modal-content">
-              <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">
-                    Are you sure you want to delete this Receipt?
-                    </h4>
-                </div>
-                <div class="modal-body">
-                   <?= $this->Form->control('delete_date', ['type' => 'taxt','class'=>'form-control datepicker  input-small','placeholder'=>'Delete Date','required'=>true,'data-date-format'=>'dd-mm-yyyy'])?>
-                   <?= $this->Form->control('remark', ['type' => 'taxt','class'=>'form-control input-small','placeholder'=>'Remarks','required'=>true])?>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn  btn-sm btn-info">Yes</button>
-                    <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-         
-        <?= $this->Form->end() ?>
-    </div>
-</div> 
-<?php
-}?>
-<?= $this->element('icheck') ?>
-<?= $this->element('validate') ?>  -->
-<?php 
-$js="
- $(document).ready(function(){
-    $('#ServiceForm').validate({ 
-        submitHandler: function () {
-            var inputtes = $('.GrossAmount').val();
-            if(inputtes != 0 ){
-                $('#loading').show();
-                $('.submit_fee').attr('disabled','disabled');
-                form.submit();
-            }
-            else
-            {
-                alert('Invalid Amount');
-                return false; 
-            }
-        }
-    });
-    $(document).on('ifChanged', '.check_all', function(){
-        if($(this).is(':checked')){
-            $('.checkDisable').each(function(){
-                $(this).attr('checked',true).iCheck({
-                    checkboxClass: 'icheckbox_minimal-blue'
-                });
-                $(this).closest('div').addClass('checked');
-                var isClass = $(this).attr('uncheck');
-                var value = $(this).val();
-                $('.' + isClass).attr('column','1');
-                $('.check'+value).attr('checked',true);
-                $('.check'+value).attr('value',value);
-                removeDisable();
-                
-            });
-        }
-        else
-        {
-            $('.checkDisable').each(function(){
-                $(this).attr('checked',false).iCheck({
-                    checkboxClass: 'icheckbox_minimal-blue'
-                });
-                var isClass = $(this).attr('uncheck');
-                var value = $(this).val();
-                $('.' + isClass).attr('column','0');
-                $('.check'+value).attr('checked',false);
-                $('.check'+value).removeAttr('value');
-                removeDisable();
-                
-            });
-        }
-    });
-    $(document).on('ifChanged', '.rowsCount', function(){
-        var isNow = $(this);
-        if($(this).is(':checked')){
-            isNow.closest('tr').find('td input').attr('row','1')
-        }
-        else{
-            isNow.closest('tr').find('td input').attr('row','0')
-        }
-         removeDisable();
-    });
-    $('.checkDisable').each(function(){
-        var isClass = $(this).attr('uncheck');
-        var value = $(this).val();
-        var obj_cur = $(this);
-        var total = 0;
-        var amount = 0;
-        var Actualamount = 0;
-        $('.removeDisable'+value).each(function(){
-            amount += parseInt($(this).val());
-            Actualamount += parseInt($(this).closest('td').find('label').html());
-        });
-        
-        if(amount==0)
-        {
-            $('.removeDisable' + value).attr('column','0');
-            $('.check'+value).attr('checked',false);
-            $('.check'+value).removeAttr('value');
-            if(Actualamount > 0)
-            {
-                obj_cur.attr('checked',true).iCheck({
-                checkboxClass: 'icheckbox_minimal-blue'
-                });
-                obj_cur.closest('div').addClass('checked');
-                obj_cur.closest('td').append('<span style=font-weight:bolder;> Paid</span>');
-            }
-            else
-            {
-                obj_cur.attr('checked',false).iCheck({
-                checkboxClass: 'icheckbox_minimal-blue'
-                });
-            }
-            
-            obj_cur.attr('disabled',true);
-            
-            removeDisable();
-            obj_cur.removeClass('checkDisable');
-        }
-    });
-  
-    $(document).on('ifChanged', '.checkDisable', function(){
-        var isClass = $(this).attr('uncheck');
-        var value = $(this).val();
-        if($(this).is(':checked')){
-            $('.' + isClass).attr('column','1');
-            $('.check'+value).attr('checked',true);
-            $('.check'+value).attr('value',value);
-        }
-        else{
-            $('.' + isClass).attr('column','0');
-            $('.check'+value).attr('checked',false);
-            $('.check'+value).removeAttr('value');
-        }
-        removeDisable();
-    });
-
-    function removeDisable(){
-        $('.amountValid').each(function(){
-            var column = $(this).attr('column');
-            var row = $(this).attr('row');
-            if(row == 1 && column == 1){
-               $(this).removeAttr('disabled');
-            }
-            else{
-                 $(this).attr('disabled','true');
-            }
-        });
-        calcuteAmount();
-    }
-    
-    calcuteAmount(); 
-    function calcuteAmount(){
-        var concession_amount_1=0;
-        var concession_amount_2=0;
-        $('.checkDisable').each(function(){
-            var isClass = $(this).attr('uncheck');
-            var totalAmount = $(this).attr('totalAmount');
-            var total = 0;
-            $('.' + isClass).each(function(){
-                var column = $(this).attr('column');
-                var row = $(this).attr('row');
-                var fee_concession_amount =  parseInt($(this).attr('feeConcessionAmount'));
-                var fee_type_role_id = $(this).attr('fee_type_role_id');
-                if(row == 1 && column == 1){
-                    var amount = parseInt($(this).val());
-                    total=parseInt(total)+amount;
-
-                    if(fee_type_role_id==1)
-                    {
-                        concession_amount_1+=fee_concession_amount;
-                    }
-                    else if(fee_type_role_id==2)
-                    {
-                        concession_amount_2+=fee_concession_amount;
-                    }
-                }
-            });
-            $('.'+totalAmount).val(total);
-            $('input[name=concession_amount_1]').val(concession_amount_1);
-            $('input[name=concession_amount_2]').val(concession_amount_2);
-        });
-
-        grossTotal();
-    }
-
-    function grossTotal(){
-        var totalAmount=0;
-        $('.gross').each(function(){
-            var amount = parseInt($(this).val());
-            totalAmount=parseInt(totalAmount)+amount;
-        });
-        $('.GrossAmount').val(totalAmount);
-        $('.totalFee').val(totalAmount);
-        calAmount();
-    }
-
-    $(document).on('keyup', '.amountValid', function(){
-        var actualAmount=parseInt($(this).attr('actualAmount'));
-        var isClass = $(this).attr('uncheck');
-        var totalAmount = $(this).attr('totalAmount');
-
-        var inputted = parseInt($(this).val());
-        var total = 0; 
-        if( (inputted > actualAmount) || (inputted < 1) || ($(this).val().length == 0)){
-            alert('Invalid Amount'); 
-            $(this).val(actualAmount);
-            calcuteAmount();
-        }
-        else{
-           calcuteAmount(); 
-        }
-    });
-    
-     
-});
-    
-";
-$this->Html->scriptBlock($js,['block'=>'block_js']);
-?>
