@@ -32,23 +32,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Month</label>
-                            <!-- <?php 
-                            $months=[];
-                            $months[]=['text'=>'January','value'=>01];
-                            $months[]=['text'=>'February','value'=>02];
-                            $months[]=['text'=>'March','value'=>03];
-                            $months[]=['text'=>'April','value'=>04];
-                            $months[]=['text'=>'May','value'=>05];
-                            $months[]=['text'=>'June','value'=>06];
-                            $months[]=['text'=>'July','value'=>07];
-                            $months[]=['text'=>'August','value'=>08];
-                            $months[]=['text'=>'September','value'=>09];
-                            $months[]=['text'=>'October','value'=>10];
-                            $months[]=['text'=>'November','value'=>11];
-                            $months[]=['text'=>'December','value'=>12];
-                            ?>
-                            <?php echo $this->Form->control('student_months',[
-                            'label' => false,'class'=>'form-control','empty'=>'---Select Section---','options'=>$months,'id'=>'section_id']);?> -->
+                           
                             <select name="student_months" class="form-control" required="required">
                                 <option value="">--Select--</option>
                                 <option value="01">January</option>
