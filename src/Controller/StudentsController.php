@@ -1382,6 +1382,7 @@ class StudentsController extends AppController
             {
                 $student->dob=date('Y-m-d',strtotime($this->request->getData('dob')));
             }
+			//pr($student); exit;
             if ($this->Students->save($student)) {
                 $student_father_professions=$this->request->getData('student_father_professions');
                 $student_mother_professions=$this->request->getData('student_mother_professions');

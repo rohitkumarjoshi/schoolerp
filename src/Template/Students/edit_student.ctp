@@ -237,9 +237,14 @@
                                 ); ?>
                         </div>
                         <div class="col-md-3">
-                            <label class="control-label"> Vehicle</label>
+                            <label class="control-label">Pickup Vehicle</label>
                             <?php echo $this->Form->control('student_infos[0][vehicle_id]',[
                             'label' => false,'class'=>'form-control','empty'=>'---Select Vehicle---','options'=>$vehicles,'id'=>'vehicle_id','value'=>$student->student_infos[0]->vehicle_id]);?>
+                        </div>
+						<div class="col-md-3">
+                            <label class="control-label">Drop Vehicle</label>
+                            <?php echo $this->Form->control('student_infos[0][drop_vechile_id]',[
+                            'label' => false,'class'=>'form-control','empty'=>'---Select Vehicle---','options'=>$vehicles,'id'=>'vehicle_id','value'=>$student->student_infos[0]->drop_vechile_id]);?>
                         </div>
                         <div class="col-md-3">
                             <label class="control-label"> Vehicle Station</label>                                

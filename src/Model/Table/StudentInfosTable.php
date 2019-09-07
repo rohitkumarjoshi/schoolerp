@@ -149,6 +149,11 @@ class StudentInfosTable extends Table
             'foreignKey' => 'vehicle_id'
         ])
         ->setConditions(['Vehicles.is_deleted'=>'N']);
+		
+		$this->belongsTo('Vehicles', [
+            'foreignKey' => 'drop_vechile_id'
+        ])
+        ->setConditions(['Vehicles.is_deleted'=>'N']);
 
         $this->belongsTo('Hostels', [
             'foreignKey' => 'hostel_id'

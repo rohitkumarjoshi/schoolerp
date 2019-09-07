@@ -101,6 +101,7 @@ class StudentInfo extends Entity
         'house_id' => true,
         'student_parent_profession_id' => true,
         'vehicle_id' => true,
+        'drop_vechile_id' => true,
         'hostel_id' => true,
         'room_id' => true,
         'hostel_tc_nodues' => true,

@@ -28,6 +28,17 @@ class ClassMappingsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 
+	 public function classmappingexcel(){
+		 
+		$this->viewBuilder()->layout(''); 
+		$classMappings=$this->ClassMappings->find()->contain(['StudentClasses', 'Mediums', 'Streams', 'Sections', 'Employees']);
+		
+		$this->set(compact('classMappings'));
+		 
+	 }
+	 
+	 
     public function index($id = null)
     {
         $user_id = $this->Auth->User('id');

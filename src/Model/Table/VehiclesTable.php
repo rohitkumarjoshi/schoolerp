@@ -50,6 +50,9 @@ class VehiclesTable extends Table
         $this->hasMany('StudentInfos', [
             'foreignKey' => 'vehicle_id'
         ]);
+		$this->hasMany('StudentInfos', [
+            'foreignKey' => 'drop_vechile_id'
+        ]);
         $this->hasMany('VehicleDriverMappings', [
             'foreignKey' => 'vehicle_id'
         ]);

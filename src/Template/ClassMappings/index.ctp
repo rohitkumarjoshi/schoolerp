@@ -144,9 +144,12 @@
 		        <?= $this->Form->end() ?>
 		    </div>
 		    <div class="box-body">
+				<div class="pull-right" style="padding-bottom: 4px;">
+					 <?php echo $this->Html->link('Excel',['controller'=>'class-mappings','action' => 'classmappingexcel'],['target'=>'_blank','class'=>'btn btn-success']); ?>
+				</div>
 		        <?php $page_no = $this->Paginator->counter(['format' => __('{{page}}')]); ?>
 		        <?php $page_no=($page_no-1)*10; ?>
-				<table id="example1" class="table">
+				<table id="example1" class="table" >
 					<thead>
 						<tr>
 							<th scope="col"><?= __('Sr.No') ?></th>
